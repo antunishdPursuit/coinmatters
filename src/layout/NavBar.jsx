@@ -38,7 +38,7 @@ function NavBar() {
         {loggedIn ? 
           <>
             <Link className="links-tab" to={`/${user.username}`}>Profile</Link>
-            <Link className="links-tab" onClick={LogOut}>Log Out</Link>
+            <Link className="links-tab" to="/" onClick={LogOut}>Log Out</Link>
           </>
           
         : 
