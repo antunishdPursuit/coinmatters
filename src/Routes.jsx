@@ -11,7 +11,7 @@ import Home from "./pages/Home";
 import Register from "./components/Register";
 import LogIn from "./components/LogIn";
 import NewList from "./components/Users/NewList";
-import UserList from "./components/Searches/UserList.js";
+import UserList from "./components/Searches/UserList";
 import UserMenu from "./components/Users/UserMenu"
 
 // Auth
