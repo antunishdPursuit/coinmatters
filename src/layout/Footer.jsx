@@ -8,7 +8,7 @@ import './Footer.css';
             <div className="footer__col github">
                 <p className='footer__col_title'>Sources</p>
                 <a href="https://github.com/antunishdPursuit/coinmatterscapstone-frontend">FrontEnd</a>
-                <a href="https://github.com/Irwinj7/Coinmatters-backened">BackEnd</a>
+                <a href="https://github.com/antunishdPursuit/Coinmatters-backened">BackEnd</a>
             </div>
 
         </div>
