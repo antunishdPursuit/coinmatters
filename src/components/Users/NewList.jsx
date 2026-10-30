@@ -25,7 +25,7 @@ export default function NewList() {
         //make a POST request to the "/list" route, where all user lists will be stored.
         axios
         //The user_id must be send in the URL as a parameter in order for the /lists route to successful identify and input the user_id. Thus, instead of /lists it is /lists/user.user_id or lists/${userId}. in the backend this is reflected by using "/:user_id" which accepts the user id as a parameter. 
-         .post(`${API}/lists/${userId}`, list)
+         .post(`${API}/lists/${userId}`, list, { withCredentials: true })
          .then((response) => {
             console.log("List added to the lists route:", response.data);
             setList(response.config.adapter.data);
