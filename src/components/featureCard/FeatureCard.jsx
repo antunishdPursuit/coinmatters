@@ -15,7 +15,7 @@ const FeatureCard = ({
     return (
         <div className="feature-card">
             <div className="feature-card__img">
-                <img src={require(`${imgUrl}`)} alt="a user who uses this app" />
+                <img src={imgUrl} alt="a user who uses this app" />
             </div>
             <div className="feature-card__info">
                 <div className="feature-card__title">

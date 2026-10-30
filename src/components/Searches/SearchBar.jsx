@@ -5,7 +5,7 @@ import "../../CSS/Search.css";
 
 
 
-// const API = process.env.REACT_APP_API_URL;
+// const API = import.meta.env.VITE_API_URL;
 
 /*
 this function is the SearchBar fxn that is responsible for taking the userList, which is the itemList passed down from the UserList component, and onSearch, which is the findCheapestOptions fxn, to store the zipcode and send the information back to the  findCheapestOptions fxn. 

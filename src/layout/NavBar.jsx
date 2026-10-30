@@ -4,7 +4,7 @@ import navLogo from "../Images/navLogo.png";
 import "./NavBar.css";
 import axios from "axios";
 import { AuthData } from "../context/GetUser";
-const API = process.env.REACT_APP_API_URL;
+const API = import.meta.env.VITE_API_URL;
 
 function NavBar() { 
   const { loggedIn } = AuthData();

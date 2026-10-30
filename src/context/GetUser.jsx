@@ -5,7 +5,7 @@ import App from "../Routes";
 const AuthContext = createContext();
 export const AuthData = () => useContext(AuthContext);
 
-const API = process.env.REACT_APP_API_URL;
+const API = import.meta.env.VITE_API_URL;
 
 export const AuthWrapper = () => {
   const [ loggedIn, setLoggedIn] = useState(false)
@@ -37,7 +37,7 @@ export const AuthWrapper = () => {
     useEffect(() => {
     console.log("Checking loggined in")
     axios
-      .get(`${process.env.REACT_APP_API_URL}/check-login`, { withCredentials: true })
+      .get(`${import.meta.env.VITE_API_URL}/check-login`, { withCredentials: true })
       .then((response) => {
         // If the server responds with a success status, the cookie exists
         console.log("Cookie Set")

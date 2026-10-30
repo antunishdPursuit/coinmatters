@@ -5,7 +5,7 @@ import { AuthData } from "../../context/GetUser";
 import { useItemListContext } from "../../context/GetItems";
 import "../../CSS/New-List.css";
 
-const API = process.env.REACT_APP_API_URL;
+const API = import.meta.env.VITE_API_URL;
 
 export default function NewList() {
     const navigate = useNavigate();
