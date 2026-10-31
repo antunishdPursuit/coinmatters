@@ -1,3 +1,10 @@
 .app {
-    min-height: 100vh;
- }
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Everything above the footer, so the footer stays at the bottom. */
+.page {
+  flex: 1;
+}

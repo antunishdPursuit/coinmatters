@@ -1,58 +1,75 @@
-.navbar {
+.site-header {
   display: flex;
-  margin-top: 2px;
-  border-bottom: 1px solid black;
-}
-
-.logo-div {
-  flex: 1;
-  margin-left: 10px;
-  display: flex;
-  align-items: center;
-}
-
-.nav-title {
-  font-size: 24px;
-  font-family: "Arial", sans-serif;
-  padding-left: 1%;
-  align-items: center;
-}
-
-.nav-logo {
-  max-width: 50px;
-}
-
-.navbar-links {
-  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--light-gray);
 }
 
-.links-tab{
+.site-name {
+  display: flex;
   align-items: center;
-  font-size: 24px;
-  font-family: "Arial", sans-serif;
-  margin-left: 20px;
-}
-
-.navbar-links a {
+  gap: var(--space-1);
+  color: var(--ink);
   text-decoration: none;
-  margin-right: 20px;
 }
 
-.navbar-links a:link {
-  color: red;
+.site-name img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
 }
 
-.navbar-links a:visited {
-  color: black;
+.site-name span {
+  font-size: var(--text-xl);
+  font-weight: 700;
 }
 
-.navbar-links a:hover {
-  color: #FCD712;
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+  font-weight: 700;
 }
 
-.navbar-links a:active {
-  color: #FCD712;
+.site-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 var(--space-2);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+/* The current page is underlined in the action color. */
+.site-nav a[aria-current="page"] {
+  text-decoration: underline;
+  text-decoration-color: var(--pink);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 8px;
+}
+
+.site-nav a:hover {
+  color: var(--pink);
+}
+
+.site-nav .nav-button {
+  box-sizing: border-box;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--gray);
+  border-radius: var(--radius);
+}
+
+@media (max-width: 767px) {
+  .site-header {
+    padding: var(--space-2);
+  }
+
+  .site-nav a,
+  .site-nav .nav-button {
+    padding: 0 var(--space-1);
+  }
 }

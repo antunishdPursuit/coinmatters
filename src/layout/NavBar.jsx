@@ -1,16 +1,15 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import navLogo from "../Images/navLogo.png";
 import "./NavBar.css";
 import axios from "axios";
 import { AuthData } from "../context/GetUser";
 const API = import.meta.env.VITE_API_URL;
 
-function NavBar() { 
+function NavBar() {
   const { loggedIn } = AuthData();
   const { logout } = AuthData();
-  const { user } = AuthData()
-  
+
   function LogOut(){
     axios
     .post(`${API}/logout`, {}, { withCredentials: true })
@@ -24,28 +23,25 @@ function NavBar() {
   }
 
   return (
-    <nav className="navbar">
-      <div className="logo-div">
-        <Link to="/">
-          <img src={navLogo} alt="My App Logo" className="nav-logo" />
-        </Link>
-        <span className="nav-title">CoinsMatter</span>
-      </div>
-      <div className="navbar-links">
-        <Link className="links-tab" to="/">Home</Link>
-        <Link className="links-tab" to="/about">About</Link>
-        <Link className="links-tab" to="/search">Search</Link>
-        {loggedIn ? 
+    <header className="site-header">
+      <Link className="site-name" to="/">
+        <img src={navLogo} alt="" />
+        <span>CoinMatters</span>
+      </Link>
+      <nav className="site-nav" aria-label="Main">
+        <NavLink to="/" end>Home</NavLink>
+        <NavLink to="/about">About</NavLink>
+        <NavLink to="/search">Search</NavLink>
+        {loggedIn ?
           <>
-            <Link className="links-tab" to="/profile">Profile</Link>
-            <Link className="links-tab" to="/" onClick={LogOut}>Log Out</Link>
+            <NavLink to="/profile">Profile</NavLink>
+            <Link className="nav-button" to="/" onClick={LogOut}>Log out</Link>
           </>
-          
-        : 
-          <Link className="links-tab" ></Link>
+        :
+          <Link className="nav-button" to="/login">Log in</Link>
         }
-      </div>
-    </nav>
+      </nav>
+    </header>
   );
 }
 

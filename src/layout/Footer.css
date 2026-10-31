@@ -1,39 +1,36 @@
-.footer {
-    background-color: #ff69b4;
-    color: white;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    margin-top: auto;
+.site-footer {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--light-gray);
 }
 
-.footer__col {
-    display: flex;
-    flex-direction: column;
-    width: 33%;
-    justify-content: center;
-    align-items: center;
+.footer-name {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-lg);
+  font-weight: 700;
 }
 
-.footer__col a {
-    width: 33%;
-    text-align: center;
-    text-decoration: none;
-    color: black;
-    padding-top: 10px;
-    font-size: medium;
+.footer-name img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
 }
 
-.footer__col a:hover {
-    color: yellow;
+.footer-links {
+  display: flex;
+  gap: var(--space-3);
+  font-weight: 700;
 }
 
-.github{
-    text-align: center;
-}
-
-.footer__col_title{
-    margin-top: 0px;
-    font-size: 20px;
-    margin-bottom: 0px;
+@media (max-width: 767px) {
+  .site-footer {
+    padding: var(--space-3) var(--space-2);
+  }
 }

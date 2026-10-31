@@ -20,7 +20,9 @@ test('renders the home page and main navigation for a logged-out visitor', async
   expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/');
   expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');
   expect(screen.getByRole('link', { name: 'Search' })).toHaveAttribute('href', '/search');
-  expect(screen.queryByRole('link', { name: 'Log Out' })).not.toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Log in' })).toHaveAttribute('href', '/login');
+  expect(screen.queryByRole('link', { name: 'Log out' })).not.toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('aria-current', 'page');
   expect(screen.getAllByAltText('a user who uses this app')).toHaveLength(3);
 });
 

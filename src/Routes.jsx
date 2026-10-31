@@ -24,7 +24,7 @@ function App() {
   const { loggedIn } = AuthData();
   
   return (
-    <div className="app">
+    <div className="page">
       <ItemListProvider>
           <NavBar></NavBar>
           <main>
