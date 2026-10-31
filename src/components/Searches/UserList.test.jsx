@@ -126,6 +126,14 @@ test('warns when a store sells a smaller size', async () => {
   expect(screen.queryByText(/Doesn't include/)).not.toBeInTheDocument();
 });
 
+test('says when the stores and prices could not load', async () => {
+  axios.get.mockImplementation((url) => (url.endsWith('/retailer') ? Promise.reject(new Error('down')) : Promise.resolve({ data: products })));
+  renderSearch();
+
+  expect(await screen.findByRole('alert')).toHaveTextContent("We couldn't load the stores and prices.");
+  expect(screen.getByRole('button', { name: 'Find my deals' })).toBeDisabled();
+});
+
 test('asks for items when the list is empty', async () => {
   renderSearch();
   await screen.findByText('We cover 10029 and 10456.');

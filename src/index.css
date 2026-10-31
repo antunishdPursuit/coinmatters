@@ -72,6 +72,13 @@ a:hover {
   color: var(--white);
 }
 
+/* A button that can't be used yet, such as while saving or loading. */
+.button-primary:disabled,
+.button-primary:disabled:hover {
+  background: var(--gray);
+  cursor: not-allowed;
+}
+
 .button-outline {
   border: 1px solid var(--gray);
   background: var(--white);

@@ -10,13 +10,15 @@ const listZipcodes = (zipcodes) => zipcodes.length === 1
     ? String(zipcodes[0])
     : `${zipcodes.slice(0, -1).join(", ")} and ${zipcodes[zipcodes.length - 1]}`;
 
-export default function SearchBar({ userList, onSearch, zipcodes }) {
+export default function SearchBar({ userList, onSearch, zipcodes, ready }) {
     const [zipcode, setZipcode] = useState("");
     const navigate = useNavigate()
 
     const handleSearch = (e) => {
         e.preventDefault();
-        onSearch(userList, zipcode.trim());
+        if (ready) {
+            onSearch(userList, zipcode.trim());
+        }
     }
 
     const newList = () => {
@@ -37,7 +39,7 @@ export default function SearchBar({ userList, onSearch, zipcodes }) {
                 onChange={(e) => setZipcode(e.target.value)}
             />
             {zipcodes.length > 0 && <span id="zip-hint" className="search-hint">We cover {listZipcodes(zipcodes)}.</span>}
-            <button type="submit" className="button-primary">Find my deals</button>
+            <button type="submit" className="button-primary" disabled={!ready}>Find my deals</button>
             <button type="button" className="button-outline" onClick={newList}>Save my list</button>
         </form>
     );

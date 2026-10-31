@@ -25,22 +25,18 @@ export default function UserList() {
 
     //Products Data Retrieved Here
     const [products, setProducts] = useState([]);
+    //searching waits for both the products and the stores, so a failed load
+    //isn't mistaken for a zip code with no stores
+    const [storeData, setStoreData] = useState("loading");
 
     useEffect(() => {
-        axios.get(`${API}/products`)
-        .then((response) => {
-            setProducts(response.data);
+        Promise.all([axios.get(`${API}/products`), axios.get(`${API}/retailer`)])
+        .then(([productsResponse, storesResponse]) => {
+            setProducts(productsResponse.data);
+            setStores(storesResponse.data);
+            setStoreData("ready");
         })
-        .catch((e) => console.error("error fetching data", e));
-    }, []);
-
-    //Retailers/Stores data retrieved here
-    useEffect(() => {
-        axios.get(`${API}/retailer`)
-        .then((response) => {
-            setStores(response.data);
-        })
-        .catch((e) => console.error("error fetching data", e));
+        .catch(() => setStoreData("error"));
     }, []);
 
     //every zip code a store covers, for the hint under the zip field
@@ -212,7 +208,8 @@ export default function UserList() {
                         ))}
                     </ul>
                 )}
-                <SearchBar userList={itemList} onSearch={findCheapestOptions} zipcodes={zipcodes} />
+                {storeData === "error" && <p className="search-error" role="alert">We couldn't load the stores and prices. Refresh the page to try again.</p>}
+                <SearchBar userList={itemList} onSearch={findCheapestOptions} zipcodes={zipcodes} ready={storeData === "ready"} />
             </section>
             <section className="search-options" aria-labelledby="options-title">
                 <h2 id="options-title" className="visually-hidden">
