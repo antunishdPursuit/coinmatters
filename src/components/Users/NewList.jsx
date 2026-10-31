@@ -1,124 +1,199 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { AuthData } from "../../context/GetUser";
 import { useItemListContext } from "../../context/GetItems";
-import "../../CSS/New-List.css";
+import { findItemImage } from "../Searches/listImages";
+import { buildShelf } from "./shelf";
+import "./NewList.css";
 
 const API = import.meta.env.VITE_API_URL;
 
+//names are kept trimmed and lowercase, like the Search page's list
+const clean = (name) => name.trim().toLowerCase();
+
+const savedItems = (list) => [...new Set((list.products || []).filter((item) => item.trim()).map(clean))];
+
+//"Dairy and eggs" -> "aisle-dairy-and-eggs"
+const aisleId = (name) => `aisle-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+
+//makes a new list, or edits a saved one at /list/:id/edit
 export default function NewList() {
     const navigate = useNavigate();
-    const { user } = AuthData();
+    const { id } = useParams();
+    const { user, userList } = AuthData();
     const { itemList } = useItemListContext();
-    const [list, setList] = useState({
-        user_id: user.user_id,
-        list_name: "",
-        products: [...itemList],
-        note: "",
-        date_created: new Date().toISOString()
-    });
+    const savedList = id && (userList.lists || []).find((list) => String(list.list_id) === id);
 
-    const addList = (list) => {
-        const userId = user.user_id;
-        console.log(user)
-        //make a POST request to the "/list" route, where all user lists will be stored.
-        axios
-        //The user_id must be send in the URL as a parameter in order for the /lists route to successful identify and input the user_id. Thus, instead of /lists it is /lists/user.user_id or lists/${userId}. in the backend this is reflected by using "/:user_id" which accepts the user id as a parameter. 
-         .post(`${API}/lists/${userId}`, list, { withCredentials: true })
-         .then((response) => {
-            console.log("List added to the lists route:", response.data);
-            setList(response.config.adapter.data);
-            navigate("/profile");
-        })
-        .catch((e) => {
-            console.error("Error adding list to /lists route", e);
-        });   
+    const [name, setName] = useState(savedList ? savedList.list_name : "");
+    const [products, setProducts] = useState(() => savedList ? savedItems(savedList) : id ? [] : [...new Set(itemList.map(clean))]);
+    const [note, setNote] = useState(savedList ? savedList.note || "" : "");
+    const [ownItem, setOwnItem] = useState("");
+    const [itemError, setItemError] = useState("");
+    const [saveError, setSaveError] = useState("");
+    const [shelf, setShelf] = useState(null);
+    const [shelfError, setShelfError] = useState(false);
+    const [filled, setFilled] = useState(!id || Boolean(savedList));
+    const ownInput = useRef(null);
+
+    useEffect(() => {
+        axios.get(`${API}/products`)
+            .then((response) => setShelf(buildShelf(response.data)))
+            .catch((e) => {
+                console.error("error fetching data", e);
+                setShelfError(true);
+            });
+    }, []);
+
+    //on a direct visit the saved lists arrive after the page opens, so the form
+    //waits for them and is filled once they do
+    useEffect(() => {
+        if (savedList && !filled) {
+            setName(savedList.list_name);
+            setProducts(savedItems(savedList));
+            setNote(savedList.note || "");
+            setFilled(true);
+        }
+    }, [savedList, filled]);
+
+    const toggleProduct = (item) => {
+        setProducts((current) => current.includes(item) ? current.filter((product) => product !== item) : [...current, item]);
     };
 
-    const  handleTextChange = (e) => {
-        setList({...list, [e.target.id]: e.target.value});
-        console.log(e.target.value);
+    const removeProduct = (item) => {
+        setProducts((current) => current.filter((product) => product !== item));
+        ownInput.current.focus();
     };
 
-    const handleProductChange = (index, value) => {
-        const updatedProducts = [...list.products];
-        updatedProducts[index] = value;
-        setList({ ...list, products: updatedProducts });
-    };
-
-    const handleAddProduct = (index, value) => {
-        setList({ ...list, products: [...list.products, ""] });
+    const addOwnItem = () => {
+        const item = clean(ownItem);
+        if (!item) {
+            return;
+        }
+        if (products.includes(item)) {
+            setItemError(`${item} is already on your list.`);
+            return;
+        }
+        setProducts([...products, item]);
+        setOwnItem("");
+        setItemError("");
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        //remove empty item
-        const filteredProducts = list.products.filter(item => item.trim() !== "");
-        setList({ ...list, products: filteredProducts });
-        console.log("this is the list object", list);
-        addList(list);
+        const list = { list_name: name.trim(), products, note: note.trim() };
+        const request = id
+            ? axios.put(`${API}/lists/user/${user.user_id}/${id}`, list, { withCredentials: true })
+            : axios.post(`${API}/lists/${user.user_id}`, list, { withCredentials: true });
+        request
+            .then(() => navigate("/profile"))
+            .catch((error) => setSaveError(error.response?.data?.error || "We couldn't save this list. Please try again."));
     };
 
+    if (id && userList.lists && !savedList) {
+        return (
+            <div className="new-list-missing">
+                <p>We couldn't find that list.</p>
+                <Link className="button-outline" to="/profile">Back to My lists</Link>
+            </div>
+        );
+    }
 
     return (
-        <div className="page-wrapper">
-            <div className="new-list">
-                <form onSubmit={handleSubmit}>
-                    <div className="list-title">
-                        <label htmlFor="list_name">Name:</label>
-                        <input
-                            id="list_name"
-                            value={list.name}
-                            type="text"
-                            onChange={handleTextChange}
-                            placeholder="Name of list"
-                            required
-                        />
+        <div className="new-list-page">
+            <div className="rail" aria-hidden="true"></div>
+            <div className="new-list-grid">
+                <section className="new-list-form" aria-labelledby="new-list-title">
+                    <div className="sign">
+                        <div className="sign-cords" aria-hidden="true"><span></span><span></span></div>
+                        <h1 id="new-list-title">{id ? "Edit list" : "New list"}</h1>
                     </div>
-                    <div className="list-products">
-                        <label htmlFor="products">Products:</label>
-                        <div className="list-products-box">
-                            {list.products.map((product, index) => (
-                                <div key={index}>
+                    <form onSubmit={handleSubmit} aria-busy={!filled}>
+                        <fieldset disabled={!filled}>
+                            <div className="new-list-field">
+                                <label htmlFor="list_name">Name</label>
+                                <input id="list_name" className="field-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Name of list" maxLength={255} required />
+                            </div>
+                            <div className="new-list-field">
+                                <h2 id="new-list-items">Products · {products.length}</h2>
+                                {products.length === 0
+                                    ? <p className="new-list-hint">Pick from the shelf or type your own.</p>
+                                    : (
+                                        <ul className="new-list-items" aria-labelledby="new-list-items">
+                                            {products.map((item) => (
+                                                <li key={item}>
+                                                    <img src={findItemImage(item)} alt="" />
+                                                    <span>{item}</span>
+                                                    <button type="button" aria-label={`Remove ${item}`} onClick={() => removeProduct(item)}>×</button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                            </div>
+                            <div className="new-list-field">
+                                <label htmlFor="own-item" className="new-list-own-label">Not on the shelf? Type it</label>
+                                <div className="new-list-own">
                                     <input
-                                        value={product}
-                                        type="text"
-                                        onChange={(e) => handleProductChange(index, e.target.value)}
-                                        placeholder={`Product ${index + 1}`}
+                                        id="own-item"
+                                        ref={ownInput}
+                                        className="field-input"
+                                        value={ownItem}
+                                        onChange={(e) => setOwnItem(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                e.preventDefault();
+                                                addOwnItem();
+                                            }
+                                        }}
+                                        placeholder="Add a product"
+                                        maxLength={255}
                                     />
+                                    <button type="button" className="button-outline" onClick={addOwnItem}>Add</button>
                                 </div>
-                            ))}
-                        </div>
+                                {itemError && <p className="new-list-error" role="alert">{itemError}</p>}
+                            </div>
+                            <div className="new-list-field">
+                                <label htmlFor="note">Note</label>
+                                <textarea id="note" className="field-input" rows="2" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Any details you want to add?" maxLength={255} />
+                            </div>
+                            {saveError && <p className="new-list-error" role="alert">{saveError}</p>}
+                            <div className="new-list-actions">
+                                <button type="submit" className="button-primary">Save list</button>
+                                <Link className="button-outline" to={id ? "/profile" : "/search"}>Nevermind!</Link>
+                            </div>
+                        </fieldset>
+                    </form>
+                </section>
+
+                <section className="new-list-shelf" aria-labelledby="shelf-title">
+                    <div className="sign">
+                        <div className="sign-cords" aria-hidden="true"><span></span><span></span></div>
+                        <h2 id="shelf-title">Pick from the shelf</h2>
                     </div>
-                    <div className="product-btn">
-                        <button className="list-button" type="button" onClick={handleAddProduct}>
-                            Add Product
-                        </button>
+                    {shelfError && <p className="shelf-message">We couldn't load the shelf. You can still type your own items.</p>}
+                    {!shelf && !shelfError && <p className="shelf-message">Loading the shelf…</p>}
+                    <div className="shelf-aisles">
+                        {(shelf || []).map((aisle) => (
+                            <section key={aisle.name} className="shelf-aisle" aria-labelledby={aisleId(aisle.name)}>
+                                <h3 id={aisleId(aisle.name)}>{aisle.name}</h3>
+                                <ul>
+                                    {aisle.items.map((item) => {
+                                        const added = products.includes(item);
+                                        return (
+                                            <li key={item}>
+                                                <button type="button" className={added ? "shelf-item added" : "shelf-item"} aria-pressed={added} onClick={() => toggleProduct(item)}>
+                                                    <img src={findItemImage(item)} alt="" />
+                                                    <span className="shelf-item-name">{item}</span>
+                                                    <span className="shelf-item-tag" aria-hidden="true">{added ? "✓ Added" : "+ Add"}</span>
+                                                </button>
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
+                            </section>
+                        ))}
                     </div>
-                        
-                    <div className="note-section">
-                        <label htmlFor="note">Note:</label>
-                        <div className="note">
-                            <textarea 
-                            id="note"
-                            value={list.note}
-                            type="text"
-                            placeholder="Any details you want to add?"
-                            onChange={handleTextChange}
-                            />
-                        </div>
-                    </div>
-                    <br />
-                    <div className="space-out-btns">
-                        <input className="list-button" type="submit" />
-                        <button className="list-button">
-                            <Link to="/search">Nevermind!</Link>
-                        </button>
-                    </div>
-                    
-                </form>
+                </section>
             </div>
         </div>
     );
