@@ -1,5 +1,5 @@
-import React from "react";
-import { Link, NavLink } from "react-router-dom";
+import { startTransition } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import navLogo from "../Images/navLogo.png";
 import "./NavBar.css";
 import axios from "axios";
@@ -7,15 +7,18 @@ import { AuthData } from "../context/GetUser";
 const API = import.meta.env.VITE_API_URL;
 
 function NavBar() {
-  const { loggedIn } = AuthData();
-  const { logout } = AuthData();
+  const navigate = useNavigate();
+  const { loggedIn, logout } = AuthData();
 
   function LogOut(){
     axios
     .post(`${API}/logout`, {}, { withCredentials: true })
-    .then((res) => {
-      window.location.reload();
-      logout()
+    .then(() => {
+      // one update, so a members-only page doesn't send the visitor to log in first
+      startTransition(() => {
+        navigate("/")
+        logout()
+      })
     })
     .catch((error) => {
       console.error("catch", error);
@@ -35,7 +38,7 @@ function NavBar() {
         {loggedIn ?
           <>
             <NavLink to="/profile">Profile</NavLink>
-            <Link className="nav-button" to="/" onClick={LogOut}>Log out</Link>
+            <button type="button" className="nav-button" onClick={LogOut}>Log out</button>
           </>
         :
           <Link className="nav-button" to="/login">Log in</Link>

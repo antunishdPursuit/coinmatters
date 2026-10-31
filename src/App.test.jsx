@@ -20,7 +20,13 @@ vi.mock('axios', () => {
     return new Promise((resolve, reject) => setTimeout(() => (api.loggedIn && path ? resolve({ data: answers[path] }) : reject(new Error('no API in tests'))), api.calls * 20));
   };
   // the only account the API knows is turned away with a wrong password
-  const post = (url) => Promise.reject(url.endsWith('/login') ? { response: { status: 401, data: { error: 'Invalid credentials' } } } : new Error('no API in tests'));
+  const post = (url) => {
+    if (url.endsWith('/logout')) {
+      api.loggedIn = false;
+      return Promise.resolve({ data: {} });
+    }
+    return Promise.reject(url.endsWith('/login') ? { response: { status: 401, data: { error: 'Invalid credentials' } } } : new Error('no API in tests'));
+  };
   const client = { get, post };
   return { default: { ...client, create: () => client } };
 });
@@ -41,7 +47,7 @@ test('renders the home page and main navigation for a logged-out visitor', async
   expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');
   expect(screen.getByRole('link', { name: 'Search' })).toHaveAttribute('href', '/search');
   expect(screen.getByRole('link', { name: 'Log in' })).toHaveAttribute('href', '/login');
-  expect(screen.queryByRole('link', { name: 'Log out' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Log out' })).not.toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('aria-current', 'page');
   expect(screen.getByRole('link', { name: 'Create an account' })).toHaveAttribute('href', '/register');
   expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(3);
@@ -78,9 +84,22 @@ test('sends a logged-in visitor from log in to the home page', async () => {
   window.history.pushState({}, '', '/login');
   render(<App />);
 
-  expect(await screen.findByRole('link', { name: 'Log out' })).toBeInTheDocument();
+  expect(await screen.findByRole('button', { name: 'Log out' })).toBeInTheDocument();
   expect(window.location.pathname).toBe('/');
   expect(screen.queryByRole('heading', { name: 'Log in' })).not.toBeInTheDocument();
+});
+
+test('logs out and goes home', async () => {
+  api.loggedIn = true;
+  window.history.pushState({}, '', '/profile');
+  render(<App />);
+
+  expect(await screen.findByRole('heading', { level: 1, name: 'Hi, testuser' })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Log out' }));
+
+  expect(await screen.findByRole('link', { name: 'Log in' })).toBeInTheDocument();
+  expect(window.location.pathname).toBe('/');
+  expect(screen.queryByRole('button', { name: 'Log out' })).not.toBeInTheDocument();
 });
 
 test('explains a wrong email or password', async () => {

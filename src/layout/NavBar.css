@@ -63,6 +63,19 @@
   border-radius: var(--radius);
 }
 
+/* Log out is a button, styled like the links beside it. */
+.site-nav button.nav-button {
+  min-height: 48px;
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.site-nav button.nav-button:hover {
+  color: var(--pink);
+}
+
 @media (max-width: 767px) {
   .site-header {
     padding: var(--space-2);

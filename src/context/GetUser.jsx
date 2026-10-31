@@ -45,15 +45,21 @@ export const AuthWrapper = () => {
       .get(`${import.meta.env.VITE_API_URL}/check-login`, { withCredentials: true })
       .then((response) => {
         // If the server responds with a success status, the cookie exists
+        // The check answers with the logged-in user, which may have changed in
+        // another tab; their lists are fetched again only when it does
         if (!stale) {
+          const checkedUser = response.data.user
           setLoggedIn(true)
-          getUserData()
+          setUser((current) => current?.user_id === checkedUser.user_id ? current : checkedUser)
         }
       })
       .catch(() => {
-        // If the server responds with an error status, the cookie does not exist
+        // If the server responds with an error status, the cookie does not exist,
+        // or the session ran out
         if (!stale) {
           setLoggedIn(false)
+          setUser({})
+          setUserList({})
         }
       })
       .finally(() => {
@@ -65,19 +71,6 @@ export const AuthWrapper = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location]);
 
-  const getUserData = () => {
-    instance
-      .get(`${API}/user`)
-      .then((res) => {
-        console.log("getUSerDAta:" )
-        console.log(res.data.authorizedData)
-        setUser(res.data.authorizedData)
-      })
-      .catch((error) => {
-          console.error("catch", error);
-      });
-  }
-
   // Disable exhaustive-deps linting for the following lines
 // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -85,7 +78,7 @@ export const AuthWrapper = () => {
       getUserList(user.user_id)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, location]);
+  }, [user?.user_id]);
 
   // get user list
   const getUserList = (userId) => {
@@ -99,12 +92,15 @@ export const AuthWrapper = () => {
       });
   }
 
+  // after the server has cleared the cookie
   const logout = () => {
-    setUser({...user, isAuthenticated: false})
+    setLoggedIn(false)
+    setUser({})
+    setUserList({})
   }
 
   return (
-    <AuthContext.Provider value={{user, logInUser, logout, getUserData, getUserList, loggedIn, authChecked, userList}}>
+    <AuthContext.Provider value={{user, logInUser, logout, getUserList, loggedIn, authChecked, userList}}>
         <App></App>
     </AuthContext.Provider>
   )

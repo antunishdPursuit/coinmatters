@@ -21,7 +21,7 @@ const aisleId = (name) => `aisle-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-"
 export default function NewList() {
     const navigate = useNavigate();
     const { id } = useParams();
-    const { user, userList } = AuthData();
+    const { user, userList, getUserList } = AuthData();
     const { itemList } = useItemListContext();
     //My lists opens a blank list; Search's "Save my list" brings its items along
     const startEmpty = useLocation().state?.empty;
@@ -87,7 +87,9 @@ export default function NewList() {
         const request = id
             ? axios.put(`${API}/lists/user/${user.user_id}/${id}`, list, { withCredentials: true })
             : axios.post(`${API}/lists/${user.user_id}`, list, { withCredentials: true });
+        //My lists shows the saved list as soon as it opens
         request
+            .then(() => getUserList(user.user_id))
             .then(() => navigate("/profile"))
             .catch((error) => setSaveError(error.response?.data?.error || "We couldn't save this list. Please try again."));
     };

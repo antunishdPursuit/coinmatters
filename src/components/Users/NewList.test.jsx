@@ -9,11 +9,12 @@ import { ItemListProvider, useItemListContext } from '../../context/GetItems';
 
 vi.mock('axios');
 
-const auth = vi.hoisted(() => ({ lists: [] }));
+const auth = vi.hoisted(() => ({ lists: [], getUserList: null }));
 vi.mock('../../context/GetUser', () => ({
   AuthData: () => ({
     user: { user_id: 1, username: 'testuser' },
     userList: { lists: auth.lists },
+    getUserList: auth.getUserList,
   }),
 }));
 
@@ -28,6 +29,7 @@ beforeEach(() => {
   auth.lists = [
     { list_id: 7, list_name: 'Grocery List', products: ['Milk', ' ', 'bread'], note: 'every day groceries' },
   ];
+  auth.getUserList = vi.fn().mockResolvedValue();
   axios.get.mockResolvedValue({ data: products });
 });
 
