@@ -132,6 +132,7 @@ a:hover {
   background: var(--ink);
 }
 
+.sign h1,
 .sign h2,
 .sign h3 {
   margin: 0;
