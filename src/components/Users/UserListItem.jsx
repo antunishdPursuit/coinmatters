@@ -26,7 +26,9 @@ function UserListItem({ list  }) {
   useEffect(() => {
     const updatedLists = removeEmptyStrings(list.products);
     const updatedMatchedImages = updatedLists.map((itemName) => {
-        const matchingImage = images.find((image) => image.name.includes(itemName));
+        // An exact name wins, so "cheese" isn't shown as mac & cheese.
+        const matchingImage = images.find((image) => image.name === itemName)
+          || images.find((image) => image.name.includes(itemName));
         return matchingImage || { name: itemName, image: defaultProductImage };
     });
 

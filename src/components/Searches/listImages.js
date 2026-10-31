@@ -1,40 +1,49 @@
+// Photos for list items. A name earlier in the list wins, so the more
+// specific names (such as "mac & cheese") come before the plain ones.
+import eggwhites from "../../Images/products/eggwhites.jpg";
+import maccheese from "../../Images/products/maccheese.jpg";
+import milk from "../../Images/products/milk.jpg";
+import eggs from "../../Images/products/eggs.jpg";
+import cheese from "../../Images/products/cheese.jpg";
+import chicken from "../../Images/products/chicken.jpg";
+import coffee from "../../Images/products/coffee.jpg";
+import water from "../../Images/products/water.jpg";
+import strawberries from "../../Images/products/strawberries.jpg";
+import pizza from "../../Images/products/pizza.jpg";
+import icecream from "../../Images/products/icecream.jpg";
+import coldcuts from "../../Images/products/coldcuts.jpg";
+import bread from "../../Images/products/bread.jpg";
+import bananas from "../../Images/products/bananas.jpg";
+import pasta from "../../Images/products/pasta.jpg";
+import yogurt from "../../Images/products/yogurt.jpg";
+import rice from "../../Images/products/rice.jpg";
+import orangejuice from "../../Images/products/orangejuice.jpg";
+import peanutbutter from "../../Images/products/peanutbutter.jpg";
+import apples from "../../Images/products/apples.jpg";
+import cereal from "../../Images/products/cereal.jpg";
+
 const images = [
-    {
-        "name": "milk",
-        "image": "data:image/jpeg;base64,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", 
-    },
-    {
-        "name": "eggs",
-        "image": "data:image/jpeg;base64,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", 
-    },
-    {
-        "name": "cheese",
-        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6ws91DK9cnyIGjpJ1_Zw8DCd4cCTkkOi68fVK3mxwsxDXPYBPmNCvGiWkmwqXZRDuPuM&usqp=CAU", 
-    },
-    {
-        "name": "chicken",
-        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOmpjgSPmBzj5FOxNFRhtY5DZGXqoGXKFnpa9JQa4LrWCdmGFQK30pLtvAlZnMbeOuL1c&usqp=CAU", 
-    },
-    {
-        "name": "coffee",
-        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRU4NZqCopxG-HIe7ttYmzsIAQL551ngeL63np68fwtxJTPVa5FKTAkR2adbk64wfSzs-0&usqp=CAU", 
-    },
-    {
-        "name": "water",
-        "image": "https://pizzahampstead.com/wp-content/uploads/2016/09/45.jpg", 
-    },
-    {
-        "name": "pizza",
-        "image": "https://lilluna.com/wp-content/uploads/2024/01/heart-shaped-pizza-resize-3.jpg", 
-    },
-    {
-        "name": "ice cream",
-        "image": "https://www.simplyrecipes.com/thmb/GG-WXWwN89wKCPApX9sGOp6yBQM=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Simply-Recipes-Cinnamon-Ice-Cream-LEAD-7-b2521994de79447b9fb08bae81d2362f.jpg", 
-    },
-    {
-        "name": "cold cuts",
-        "image": "https://www.sensualappealblog.com/wp-content/uploads/2023/09/How-Many-Slices-Of-Lunch-Meat-Is-2-Oz-1000x768.jpg", 
-    }
-]
+  { name: "egg whites", image: eggwhites },
+  { name: "mac & cheese", image: maccheese },
+  { name: "milk", image: milk },
+  { name: "eggs", image: eggs },
+  { name: "cheese", image: cheese },
+  { name: "chicken", image: chicken },
+  { name: "coffee", image: coffee },
+  { name: "water", image: water },
+  { name: "strawberries", image: strawberries },
+  { name: "pizza", image: pizza },
+  { name: "ice cream", image: icecream },
+  { name: "cold cuts", image: coldcuts },
+  { name: "bread", image: bread },
+  { name: "bananas", image: bananas },
+  { name: "pasta", image: pasta },
+  { name: "yogurt", image: yogurt },
+  { name: "rice", image: rice },
+  { name: "orange juice", image: orangejuice },
+  { name: "peanut butter", image: peanutbutter },
+  { name: "apples", image: apples },
+  { name: "cereal", image: cereal },
+];
 
 export default images;
