@@ -112,6 +112,13 @@ test('makes a list from the shelf and typed items', async () => {
   expect(await screen.findByText('My lists page')).toBeInTheDocument();
 });
 
+test('starts blank when opened from My lists', () => {
+  renderPage({ pathname: '/list/new', state: { empty: true } }, ['Milk']);
+
+  expect(screen.getByRole('heading', { name: 'Products · 0' })).toBeInTheDocument();
+  expect(productList()).not.toBeInTheDocument();
+});
+
 test('edits a saved list', async () => {
   axios.put.mockResolvedValue({ data: {} });
   renderPage('/list/7/edit');

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { AuthData } from "../../context/GetUser";
 import { useItemListContext } from "../../context/GetItems";
@@ -23,10 +23,12 @@ export default function NewList() {
     const { id } = useParams();
     const { user, userList } = AuthData();
     const { itemList } = useItemListContext();
+    //My lists opens a blank list; Search's "Save my list" brings its items along
+    const startEmpty = useLocation().state?.empty;
     const savedList = id && (userList.lists || []).find((list) => String(list.list_id) === id);
 
     const [name, setName] = useState(savedList ? savedList.list_name : "");
-    const [products, setProducts] = useState(() => savedList ? savedItems(savedList) : id ? [] : [...new Set(itemList.map(clean))]);
+    const [products, setProducts] = useState(() => savedList ? savedItems(savedList) : id || startEmpty ? [] : [...new Set(itemList.map(clean))]);
     const [note, setNote] = useState(savedList ? savedList.note || "" : "");
     const [ownItem, setOwnItem] = useState("");
     const [itemError, setItemError] = useState("");

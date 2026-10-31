@@ -28,7 +28,7 @@ function UserMenu() {
           </p>
           <p className="visually-hidden" role="status">{status}</p>
         </div>
-        <Link className="button-primary" to="/list/new">+ New list</Link>
+        <Link className="button-primary" to="/list/new" state={{ empty: true }}>+ New list</Link>
       </section>
 
       <section className="my-lists-shelf" aria-label="Your saved lists">
@@ -40,7 +40,7 @@ function UserMenu() {
               <div className="sign-cords" aria-hidden="true"><span></span><span></span></div>
               <h2>New list</h2>
             </div>
-            <Link className="list-new" to="/list/new">
+            <Link className="list-new" to="/list/new" state={{ empty: true }}>
               <span className="list-new-plus" aria-hidden="true">+</span>
               <span className="list-new-title">Start a new list</span>
               <span>Pick items from the shelf or type your own.</span>
