@@ -162,6 +162,10 @@ export default function UserList() {
         let lowestTotal = Infinity;
 
         Object.keys(prices).forEach((store) => {
+            //a store missing an item isn't cheaper, it just leaves that item out
+            if (cheapestOptions[store].some((option) => option.unavailable)) {
+                return;
+            }
             const totalPrice = parseFloat(prices[store]);
 
             if (totalPrice < lowestTotal) {
@@ -169,6 +173,10 @@ export default function UserList() {
                 cheapestStore = store;
             }
         });
+
+        if (!cheapestStore) {
+            return null;
+        }
 
         return {
             store: cheapestStore,

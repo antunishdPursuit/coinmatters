@@ -101,6 +101,18 @@ test('marks one best deal and replaces the stores on a new search', async () => 
   expect(screen.queryByRole('article', { name: 'Walmart' })).not.toBeInTheDocument();
 });
 
+test('only gives the best deal to a store that has every item', async () => {
+  renderSearch();
+  await screen.findByText('We cover 10029 and 10456.');
+  enter('Add your items', 'milk');
+  enter('Add your items', 'bananas');
+  enter('Zip code', '10456');
+
+  // CTown is cheaper only because it has no bananas
+  expect(screen.getAllByText('Best deal')).toHaveLength(1);
+  expect(within(screen.getByRole('article', { name: 'Walmart' })).getByText('Best deal')).toBeInTheDocument();
+});
+
 test('warns when a store sells a smaller size', async () => {
   renderSearch();
   await screen.findByText('We cover 10029 and 10456.');
