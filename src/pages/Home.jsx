@@ -25,24 +25,27 @@ function Home() {
         </div>
       </section>
       <section className="landing-features" aria-label="What CoinMatters does">
-        <FeatureCard
-          imgUrl={featureCard1}
-          imgAlt="Row of shopping carts"
-          title='Find the best deals'
-          text='Look up groceries by ZIP code across stores near you.'
-        />
-        <FeatureCard
-          imgUrl={featureCard2}
-          imgAlt="Fresh vegetables"
-          title='Maximize your savings'
-          text='Compare product prices across stores, with product details and availability.'
-        />
-        <FeatureCard
-          imgUrl={featureCard3}
-          imgAlt="Shopper taking an item off a store shelf"
-          title='Personalize your shopping'
-          text='Save the lists you buy most, ready to reuse anytime.'
-        />
+        <div className="rail landing-rail" aria-hidden="true"></div>
+        <div className="landing-cards">
+          <FeatureCard
+            imgUrl={featureCard1}
+            imgAlt="Row of shopping carts"
+            title='Find the best deals'
+            text='Look up groceries by ZIP code across stores near you.'
+          />
+          <FeatureCard
+            imgUrl={featureCard2}
+            imgAlt="Fresh vegetables"
+            title='Maximize your savings'
+            text='Compare product prices across stores, with product details and availability.'
+          />
+          <FeatureCard
+            imgUrl={featureCard3}
+            imgAlt="Shopper taking an item off a store shelf"
+            title='Personalize your shopping'
+            text='Save the lists you buy most, ready to reuse anytime.'
+          />
+        </div>
       </section>
     </div>
   )
