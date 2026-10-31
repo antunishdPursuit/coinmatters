@@ -32,6 +32,7 @@ export default function NewList() {
     const [ownItem, setOwnItem] = useState("");
     const [itemError, setItemError] = useState("");
     const [saveError, setSaveError] = useState("");
+    const [saving, setSaving] = useState(false);
     const [shelf, setShelf] = useState(null);
     const [shelfError, setShelfError] = useState(false);
     const [filled, setFilled] = useState(!id || Boolean(savedList));
@@ -82,6 +83,10 @@ export default function NewList() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (saving) {
+            return;
+        }
+        setSaving(true);
         const list = { list_name: name.trim(), products, note: note.trim() };
         const request = id
             ? axios.put(`${API}/lists/user/${user.user_id}/${id}`, list, { withCredentials: true })
@@ -90,7 +95,10 @@ export default function NewList() {
         request
             .then(() => getUserList(user.user_id))
             .then(() => navigate("/profile"))
-            .catch((error) => setSaveError(error.response?.data?.error || "We couldn't save this list. Please try again."));
+            .catch((error) => {
+                setSaving(false);
+                setSaveError(error.response?.data?.error || "We couldn't save this list. Please try again.");
+            });
     };
 
     if (id && userList.lists && !savedList) {
@@ -161,7 +169,7 @@ export default function NewList() {
                             </div>
                             {saveError && <p className="new-list-error" role="alert">{saveError}</p>}
                             <div className="new-list-actions">
-                                <button type="submit" className="button-primary">Save list</button>
+                                <button type="submit" className="button-primary" disabled={saving}>{saving ? "Saving…" : "Save list"}</button>
                                 <Link className="button-outline" to={id ? "/profile" : "/search"}>Nevermind!</Link>
                             </div>
                         </fieldset>
