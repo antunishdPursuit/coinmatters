@@ -17,9 +17,12 @@
     max-width: 100%;
 }
 
-/* signs in a row grow to the same height */
+/* signs in a row grow to the same height, with each title centered in its sign */
 .feature-card h2 {
     flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: var(--space-2) var(--space-3);
     text-align: center;
 }
