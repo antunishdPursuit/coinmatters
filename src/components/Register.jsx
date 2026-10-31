@@ -1,101 +1,90 @@
-import React from 'react'
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
-import "../CSS/Register.css"
 
 const API = import.meta.env.VITE_API_URL;
 
-function Register() {
-    const navigate = useNavigate();
-    const [user, setUser] = useState({
-      username: "",
-      email: "",
-      password: "",
-    });
+//the Register form; title makes its sign the page's h1
+function Register({ title, onRegistered }) {
+  const [user, setUser] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
+  const [registered, setRegistered] = useState(false);
+  const Heading = title ? "h1" : "h2";
 
-    const instance = axios.create({
-      withCredentials: true,
-   })
+  const handleTextChange = (event) => {
+    setUser({ ...user, [event.target.name]: event.target.value });
+  };
 
-    const addUser = (newUser) => {
-        console.log(newUser)
-        instance
-          .post(`${API}/register`, newUser)
-          .then(
-          (res) => {
-          navigate(`/login`);
-          })
-          .catch((c) => {
-            console.error("catch", c)
-          });
-      };
-
-      // If email was previouls used, it will not work
-    const handleTextChange = (event) => {
-        setUser({ ...user, [event.target.id]: event.target.value });
-    };
-
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        addUser(user)
-    };
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setError("");
+    setRegistered(false);
+    const newUser = { ...user, email: user.email.trim() };
+    axios
+      .post(`${API}/register`, newUser, { withCredentials: true })
+      .then(() => {
+        setRegistered(true);
+        onRegistered(newUser.email);
+        setUser({ username: "", email: "", password: "" });
+      })
+      .catch((e) => setError(e.response?.data?.error || "We couldn't register you. Please try again."));
+  };
 
   return (
-    <div className="wrapper">
+    <section className="account-form" aria-labelledby="register-title">
+      <div className="sign">
+        <div className="sign-cords" aria-hidden="true"><span></span><span></span></div>
+        <Heading id="register-title">Register</Heading>
+      </div>
       <form onSubmit={handleSubmit}>
-        <h2>Register</h2>
-        <h3>Coinsmatter will save your lists, saved for your future needs</h3>
-        <div className="input-box">
-          <label htmlFor="username"><h3>Username:</h3> </label>
+        <p className="account-intro">CoinMatters will save your lists for your future needs.</p>
+        <div className="account-field">
+          <label htmlFor="register-username">Username</label>
           <input
-          id="username" 
-          type="text" 
-          value={user.username}
-          onChange={handleTextChange}
-          className="form-control" 
-          placeholder="Like... Rex45"
-          required
+            id="register-username"
+            name="username"
+            className="field-input"
+            value={user.username}
+            onChange={handleTextChange}
+            placeholder="Like... Rex45"
+            aria-describedby="register-username-hint"
+            autoComplete="username"
+            pattern="[A-Za-z0-9_.\-]{3,30}"
+            required
           />
+          <span id="register-username-hint" className="account-hint">3 to 30 letters, numbers, dots, dashes or underscores.</span>
         </div>
-          <br></br>
-        <div className="input-box">
-          <label htmlFor="email"><h3>Email:</h3> </label>
+        <div className="account-field">
+          <label htmlFor="register-email">Email</label>
+          <input id="register-email" name="email" type="email" className="field-input" value={user.email} onChange={handleTextChange} placeholder="you@example.com" autoComplete="email" required />
+        </div>
+        <div className="account-field">
+          <label htmlFor="register-password">Password</label>
           <input
-          id="email" 
-          type="email" 
-          value={user.email}
-          onChange={handleTextChange}
-          className="form-control" 
-          placeholder=" test@gmail.com"
-          required
+            id="register-password"
+            name="password"
+            type="password"
+            className="field-input"
+            value={user.password}
+            onChange={handleTextChange}
+            aria-describedby="register-password-hint"
+            autoComplete="new-password"
+            minLength={8}
+            maxLength={72}
+            required
           />
+          <span id="register-password-hint" className="account-hint">8 to 72 characters.</span>
         </div>
-          <br></br>
-        <div className="input-box">
-          <label htmlFor="password"><h3>Password:</h3> </label>
-          <input 
-          id="password"
-          type="password" 
-          value={user.password}
-          checked={user.password}
-          onChange={handleTextChange}
-          className="form-control" 
-          placeholder="Rememorable!"
-          />
-        </div>
-          <br></br>
-        <div className="input-box button">
-          <input 
-          type="submit" 
-          />
-        </div>
-        <br></br>
-        <div className="text">
-          <h3>Already have an account? <a href="/login">Login now</a></h3>
-        </div>
+        {error && <p className="account-error" role="alert">{error}</p>}
+        <p id="register-status" className="account-status" role="status">{registered && "You're registered. Log in to start saving."}</p>
+        <button type="submit" className="button-primary">Register</button>
+        <p className="account-switch">Already have an account? <Link to="/login">Log in now</Link></p>
       </form>
-    </div>
+    </section>
   )
 }
 

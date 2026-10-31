@@ -1,68 +1,56 @@
-import React from 'react'
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "../CSS/Register.css"
+import { Link, useNavigate } from "react-router-dom";
 import { AuthData } from "../context/GetUser"
 
-function LogIn() {
+//the Log in form; title makes its sign the page's h1
+function LogIn({ title, registeredEmail }) {
   const navigate = useNavigate();
   const [user, setUser] = useState({
-    email: "",
+    email: registeredEmail || "",
     password: "",
   });
+  const [error, setError] = useState("");
   const { logInUser } = AuthData();
+  const Heading = title ? "h1" : "h2";
 
-  const handleSubmit = (event) => {
-      event.preventDefault();
-      if (logInUser) {
-        logInUser(user)
-        navigate('/')
-      }
+  const handleTextChange = (event) => {
+    setUser({ ...user, [event.target.name]: event.target.value });
   };
 
-  // If email was previouls used, it will not work
-  const handleTextChange = (event) => {
-    setUser({ ...user, [event.target.id]: event.target.value });
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setError("");
+    logInUser(user)
+      .then(() => navigate("/"))
+      .catch((e) => setError(e.message));
   };
 
   return (
-    <div className="wrapper">
+    <section className="account-form" aria-labelledby="login-title">
+      <div className="sign">
+        <div className="sign-cords" aria-hidden="true"><span></span><span></span></div>
+        <Heading id="login-title">Log in</Heading>
+      </div>
       <form onSubmit={handleSubmit}>
-        <h2>Log In</h2>
-        <h3>For all your list saving needs!</h3>
-        <div className="input-box">
-          <label htmlFor="email"><h3>Email:</h3> </label>
-          <input
-          id="email" 
-          type="email" 
-          value={user.email}
-          onChange={handleTextChange}
-          className="form-control" 
-          placeholder="email:"
-          required
+        <p className="account-intro">For all your list saving needs!</p>
+        <div className="account-field">
+          <label htmlFor="login-email">Email</label>
+          <input id="login-email" name="email" type="email" className="field-input" value={user.email} onChange={handleTextChange} placeholder="you@example.com" autoComplete="email" required />
+        </div>
+        <div className="account-field">
+          <label htmlFor="login-password">Password</label>
+          <input id="login-password" name="password" type="password" className="field-input" value={user.password} onChange={handleTextChange} autoComplete="current-password"
+            autoFocus={Boolean(registeredEmail)}
+            //the focus lands here right after registering, so the field also reads out the "You're registered" message
+            aria-describedby={registeredEmail ? "register-status" : undefined}
+            required
           />
         </div>
-          <br></br>
-        <div className="input-box">
-          <label  htmlFor="password"><h3>Password:</h3> </label>
-          <input 
-          id="password"
-          type="password" 
-          value={user.password}
-          onChange={handleTextChange}
-          className="form-check-input" 
-          placeholder="Rememorable!"
-          />
-        </div>
-          <br></br>
-        <div className="input-box button">
-          <input type="submit" />
-        </div>
-        <div className="text">
-          <h3>Dont Have An Account? <a href="/register">Register</a></h3>
-        </div>
+        {error && <p className="account-error" role="alert">{error}</p>}
+        <button type="submit" className="button-primary">Log in</button>
+        <p className="account-switch">Don't have an account? <Link to="/register">Register</Link></p>
       </form>
-    </div>
+    </section>
   )
 }
 

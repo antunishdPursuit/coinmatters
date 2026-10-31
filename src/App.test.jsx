@@ -1,5 +1,5 @@
 import { StrictMode } from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import App from './App';
 
 // The app checks the login cookie on every route change. Visitors are logged
@@ -19,7 +19,9 @@ vi.mock('axios', () => {
     api.calls += 1;
     return new Promise((resolve, reject) => setTimeout(() => (api.loggedIn && path ? resolve({ data: answers[path] }) : reject(new Error('no API in tests'))), api.calls * 20));
   };
-  const client = { get, post: () => Promise.reject(new Error('no API in tests')) };
+  // the only account the API knows is turned away with a wrong password
+  const post = (url) => Promise.reject(url.endsWith('/login') ? { response: { status: 401, data: { error: 'Invalid credentials' } } } : new Error('no API in tests'));
+  const client = { get, post };
   return { default: { ...client, create: () => client } };
 });
 
@@ -53,6 +55,14 @@ test('shows a not found page for an unknown address', async () => {
   expect(screen.getByRole('link', { name: 'Go to the home page' })).toHaveAttribute('href', '/');
 });
 
+test('sends a logged-out visitor from a members page to log in', async () => {
+  window.history.pushState({}, '', '/profile');
+  render(<App />);
+
+  expect(await screen.findByRole('heading', { level: 1, name: 'Log in' })).toBeInTheDocument();
+  expect(window.location.pathname).toBe('/login');
+});
+
 test('keeps a logged-in visitor on a members page after a reload', async () => {
   api.loggedIn = true;
   window.history.pushState({}, '', '/profile');
@@ -71,4 +81,15 @@ test('sends a logged-in visitor from log in to the home page', async () => {
   expect(await screen.findByRole('link', { name: 'Log out' })).toBeInTheDocument();
   expect(window.location.pathname).toBe('/');
   expect(screen.queryByRole('heading', { name: 'Log in' })).not.toBeInTheDocument();
+});
+
+test('explains a wrong email or password', async () => {
+  window.history.pushState({}, '', '/login');
+  render(<App />);
+
+  const email = await screen.findByLabelText('Email', { selector: '#login-email' });
+  fireEvent.change(email, { target: { value: 'testuser@example.com' } });
+  fireEvent.submit(email.closest('form'));
+
+  expect(await screen.findByRole('alert')).toHaveTextContent("That email and password don't match an account.");
 });

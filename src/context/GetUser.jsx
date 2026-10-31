@@ -20,18 +20,18 @@ export const AuthWrapper = () => {
     withCredentials: true,
   })
 
-  // Logging in the user
+  // Logging in the user. The promise rejects with a message for the form.
   const logInUser = (existingUser) => {
-    console.log("Attempting login...");
-    instance
+    return instance
       .post(`${API}/login`, existingUser)
       .then((res) => {
-        console.log("Login successful");
-        getUserData()
+        setUser(res.data.user)
         setLoggedIn(true)
       })
       .catch((error) => {
-        console.error("Login failed", error); 
+        throw new Error(error.response?.status === 401
+          ? "That email and password don't match an account."
+          : error.response?.data?.error || "We couldn't log you in. Please try again.");
       });
   };
 
