@@ -1,0 +1,122 @@
+.about-page {
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.about-intro {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+}
+
+.about-card {
+    border: 1px solid var(--light-gray);
+    border-radius: var(--radius);
+    padding: var(--space-3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.about-card h1,
+.about-card h2,
+.about-card h3 {
+    margin: 0;
+    font-size: var(--text-xl);
+    overflow-wrap: anywhere;
+}
+
+.about-card p {
+    margin: 0;
+    color: var(--gray);
+    font-size: var(--text-lg);
+    line-height: 1.5;
+}
+
+.about-team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* this rail runs across the middle of the page, so it is rounded on every corner */
+.about-team .rail {
+    width: 100%;
+    border-radius: var(--radius);
+}
+
+.about-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-3);
+}
+
+.about-team .about-grid {
+    margin-top: var(--space-3);
+}
+
+.about-initials {
+    height: 160px;
+    border-radius: var(--radius);
+    background: var(--light-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+}
+
+.about-card .about-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    font-size: var(--text-md);
+    font-weight: 700;
+}
+
+.about-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+}
+
+.about-thanks {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.about-thanks h2 {
+    margin: 0;
+    font-size: var(--text-xl);
+}
+
+.about-thanks .about-card {
+    gap: var(--space-1);
+}
+
+.about-thanks .about-card h3 {
+    font-size: var(--text-lg);
+}
+
+.about-thanks .about-card p {
+    font-size: var(--text-md);
+}
+
+@media (max-width: 767px) {
+    .about-page {
+        padding: var(--space-3) var(--space-2) var(--space-4);
+    }
+
+    .about-intro,
+    .about-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
