@@ -55,6 +55,7 @@
 
 .landing-cta-button:hover {
     background-color: #94295e;
+    color: rgb(249, 66, 176);
     text-shadow: 0px 0px 0 rgb(249, 66, 176), 0px 0px 0 rgb(249, 66, 176), 0px 0px 0 rgb(249, 66, 176), 0px 0px 0 rgb(249, 66, 176);
 
 }
