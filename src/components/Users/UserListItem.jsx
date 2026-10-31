@@ -1,81 +1,49 @@
-import { useEffect,useState } from "react";
-import "./UserListItem.css"
+import { useNavigate } from "react-router-dom";
+import { useItemListContext } from "../../context/GetItems";
 import { findItemImage } from "../Searches/listImages";
 
-function UserListItem({ list  }) {
-  const [matchedImages, setMatchedImages] = useState([]);
-  const [isExpanded, setIsExpanded] = useState(false);
-  
-  const toggleExpansion = () => {
-    setIsExpanded(!isExpanded);
+export const plural = (count, word) => `${count} ${word}${count === 1 ? "" : "s"}`;
+
+//a list saved without products has none; blank entries are skipped
+export const savedItems = (list) => (list.products || []).filter((item) => item.trim());
+
+function formattedDate(str) {
+  return new Date(str).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+}
+
+//one saved list: its items, date and note, with a button to compare its prices
+function UserListItem({ list }) {
+  const { setItemList } = useItemListContext();
+  const navigate = useNavigate();
+  const items = savedItems(list);
+  const titleId = `list-${list.list_id}`;
+
+  //the Search page starts with this list's items
+  const comparePrices = () => {
+    setItemList([...new Set(items.map((item) => item.trim().toLowerCase()))]);
+    navigate("/search");
   };
 
-
-  function removeEmptyStrings(arr) {
-    return arr.filter(item => item.trim() !== '');
-  }
-  function formattedDate(str) {
-    const date = new Date(str);
-    return date.toLocaleDateString();
-  }
-
-  //useEffect is used to updated matchedImages when itemList changes
-  useEffect(() => {
-    const updatedLists = removeEmptyStrings(list.products);
-    const updatedMatchedImages = updatedLists.map((itemName) => {
-        return { name: itemName, image: findItemImage(itemName) };
-    });
-
-    setMatchedImages(updatedMatchedImages);
-}, [list, list.products]);
-
-//Passing the sort function to sort the lists
-//this fxn removes an item from the list if the user no longer wants that on their grocery list
-// const removeListItem = (removedItem) => {
-//   const removeList = updatedList.filter((item)=> item.toLowerCase() !== removedItem.toLowerCase());
-//   setMenuList(removeList);
-
-//   setMatchedImages((prevMatchedImages) =>
-//   prevMatchedImages.filter((image) => image.name.toLowerCase() !== removedItem.toLowerCase())
-//   );
-// }
-// const editListItem = async () => {
-  
-// }
-
-// const deleteListItem = () => {
-
-// }
-
-
   return (
-    <div key={list.list_id} className={`userListItem_box ${isExpanded ? 'expanded' : 'truncated'}`}>
-      <h4 className="userListItem_box_name" onClick={toggleExpansion}>{list.list_name}</h4>
-      <div className="date-created">Date Created: {formattedDate(list.date_created)}</div>
-      <div className="userList-container">
-        <div className="saved-items">
-          <ul>
-              {matchedImages.map((item, i) => (
-                <div key={i} className="list-item">
-                    <img
-                        src={item.image}
-                        alt={item.name}
-                        style={{ width: "50px", height: "50px" }}
-                    />
-                    <li>{item.name}</li>
-                </div>
-              ))}
-          </ul>
-        </div>
-        <div className="user-note">
-            <span>Note: </span>{list.note}
-        </div>
-        <div className="list-buttons">
-          <button>Edit</button>
-          <button>Delete</button>
-        </div>
+    <article className="list-card" aria-labelledby={titleId}>
+      <div className="sign">
+        <div className="sign-cords" aria-hidden="true"><span></span><span></span></div>
+        <h2 id={titleId}>{list.list_name}</h2>
       </div>
-    </div>
+      <div className="list-body">
+        <ul className="list-tiles" aria-label={`${items.length} items`}>
+          {items.map((item, i) => (
+            <li key={i}>
+              <img src={findItemImage(item)} alt="" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="list-meta">{plural(items.length, "item")} · Created {formattedDate(list.date_created)}</p>
+        {list.note && <p className="list-note"><strong>Note:</strong> {list.note}</p>}
+        <button type="button" className="button-primary" onClick={comparePrices} aria-label={`Compare prices for ${list.list_name}`}>Compare prices</button>
+      </div>
+    </article>
   )
 }
 
