@@ -120,8 +120,18 @@
     overflow-wrap: anywhere;
 }
 
-.list-body button {
+.list-body .button-primary,
+.list-actions > * {
     font-size: var(--text-lg);
+}
+
+.list-actions {
+    display: flex;
+    gap: var(--space-1);
+}
+
+.list-actions > * {
+    flex: 1;
 }
 
 /* Delete is the one red button: it cannot be undone. */

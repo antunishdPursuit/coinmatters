@@ -66,6 +66,7 @@ test('shows each saved list with its items, date and note', () => {
   const party = screen.getByRole('article', { name: 'Party List' });
   expect(within(party).getByText('1 item · Created January 16, 2024')).toBeInTheDocument();
   expect(within(party).queryByText('Note:')).not.toBeInTheDocument();
+  expect(within(party).getByRole('link', { name: 'Edit Party List' })).toHaveAttribute('href', '/list/8/edit');
 
   const newLinks = screen.getAllByRole('link').filter((link) => link.getAttribute('href') === '/list/new');
   expect(newLinks).toHaveLength(2);

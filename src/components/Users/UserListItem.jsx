@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AuthData } from "../../context/GetUser"
 import { useItemListContext } from "../../context/GetItems";
@@ -16,7 +16,7 @@ function formattedDate(str) {
   return new Date(str).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 }
 
-//one saved list: its items, date and note, with a button to compare its prices
+//one saved list: its items, date and note, with buttons to compare its prices, edit it or delete it
 function UserListItem({ list, onDeleted }) {
   const { user, getUserList } = AuthData()
   const { setItemList } = useItemListContext();
@@ -61,7 +61,10 @@ function UserListItem({ list, onDeleted }) {
         <p className="list-meta">{plural(items.length, "item")} · Created {formattedDate(list.date_created)}</p>
         {list.note && <p className="list-note"><strong>Note:</strong> {list.note}</p>}
         <button type="button" className="button-primary" onClick={comparePrices} aria-label={`Compare prices for ${list.list_name}`}>Compare prices</button>
-        <button type="button" className="button-danger" onClick={deleteList} aria-label={`Delete ${list.list_name}`}>Delete</button>
+        <div className="list-actions">
+          <Link className="button-outline" to={`/list/${list.list_id}/edit`} aria-label={`Edit ${list.list_name}`}>Edit</Link>
+          <button type="button" className="button-danger" onClick={deleteList} aria-label={`Delete ${list.list_name}`}>Delete</button>
+        </div>
         {error && <p className="list-error" role="alert">{error}</p>}
       </div>
     </article>

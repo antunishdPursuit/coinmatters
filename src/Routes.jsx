@@ -60,6 +60,13 @@ function App() {
               :
               <Navigate to="/login" /> } />
 
+              <Route path="/list/:id/edit"
+              element={loggedIn
+              ?
+              <NewList />
+              :
+              <Navigate to="/login" /> } />
+
               <Route path="*" element={<NotFound />} />
 
             </Routes>
