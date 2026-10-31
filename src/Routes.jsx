@@ -2,7 +2,7 @@
 import { Route, Routes, Navigate } from "react-router-dom";
 // PAGES
 
-import Results from "./pages/Results"
+import NotFound from "./pages/NotFound";
 
 // COMPONENTS
 import NavBar from "./layout/NavBar";
@@ -32,8 +32,6 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/search" element={<UserList />} />
-              {/* <Route path="/new-list" element={<New />} /> */}
-              <Route path="/search-results/:query" element={<Results />} />
               <Route path="/register" 
               element={loggedIn 
               ?
@@ -48,7 +46,7 @@ function App() {
               :
               <LogIn />} />
               
-              <Route path="/:user" 
+              <Route path="/profile" 
               element={loggedIn 
               ?
               <UserMenu />
@@ -61,6 +59,8 @@ function App() {
               <NewList />
               :
               <Navigate to="/login" /> } />
+
+              <Route path="*" element={<NotFound />} />
 
             </Routes>
           </main>

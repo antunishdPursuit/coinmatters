@@ -220,7 +220,7 @@ export default function UserList() {
                     {loggedIn
                     ? 
                     <h3>
-                        <Link className="UserMenuLink"to={`/${user.username}`}> {capitalizeFirstLetter(user.username)}'s List </Link> 
+                        <Link className="UserMenuLink"to="/profile"> {capitalizeFirstLetter(user.username)}'s List </Link> 
                     </h3>
 
                     : 

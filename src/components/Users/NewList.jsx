@@ -29,7 +29,7 @@ export default function NewList() {
          .then((response) => {
             console.log("List added to the lists route:", response.data);
             setList(response.config.adapter.data);
-            navigate(`/${user.username}`);
+            navigate("/profile");
         })
         .catch((e) => {
             console.error("Error adding list to /lists route", e);
