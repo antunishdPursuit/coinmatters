@@ -24,6 +24,10 @@ function Register({ title, onRegistered }) {
     setError("");
     setRegistered(false);
     const newUser = { ...user, email: user.email.trim() };
+    if (new TextEncoder().encode(newUser.password).length > 72) {
+      setError("That password is too long. It can be at most 72 bytes, and accented letters and emoji take 2 to 4 bytes each.");
+      return;
+    }
     axios
       .post(`${API}/register`, newUser, { withCredentials: true })
       .then(() => {
@@ -77,7 +81,7 @@ function Register({ title, onRegistered }) {
             maxLength={72}
             required
           />
-          <span id="register-password-hint" className="account-hint">8 to 72 characters.</span>
+          <span id="register-password-hint" className="account-hint">At least 8 characters and at most 72 bytes. Most characters take 1 byte; accented letters and emoji take 2 to 4.</span>
         </div>
         {error && <p className="account-error" role="alert">{error}</p>}
         <p id="register-status" className="account-status" role="status">{registered && "You're registered. Log in to start saving."}</p>

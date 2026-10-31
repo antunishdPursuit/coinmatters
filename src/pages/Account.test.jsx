@@ -83,6 +83,18 @@ test('registers, then waits for the password to log in', async () => {
   expect(form('Register').getByLabelText('Password')).toHaveValue('');
 });
 
+test('counts a password the way the server does', () => {
+  renderAccount('register');
+  fill('Register', 'Username', 'Rex45');
+  fill('Register', 'Email', 'rex@example.com');
+  // 19 emoji are 38 characters on screen but 76 bytes, over the 72-byte limit
+  fill('Register', 'Password', '😀'.repeat(19));
+  fireEvent.submit(screen.getByRole('button', { name: 'Register' }).closest('form'));
+
+  expect(screen.getByRole('alert')).toHaveTextContent('That password is too long.');
+  expect(axios.post).not.toHaveBeenCalled();
+});
+
 test('shows why registering failed', async () => {
   axios.post.mockRejectedValue({ response: { data: { error: 'That username or email is already in use' } } });
   renderAccount('register');
