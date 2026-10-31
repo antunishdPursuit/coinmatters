@@ -1,32 +1,26 @@
-import  { useEffect, useState} from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import SearchBar from "./SearchBar";
 import SearchResults from "./SearchResults";
-import "../../CSS/UserList.css";
-import cartIcon from "../../Images/cart-light-icon.png";
-import cartIconHover from "../../Images/cart-solid-icon.png";
-import circleIcon from "../../Images/circle-minus-light-icon.png";
-import circleIconHover from "../../Images/circle-minus-solid-icon.png";
-import itemUnavailable from "../../Images/unavailable-item.png";
-import { AuthData } from "../../context/GetUser";
+import "./Search.css";
 import { useItemListContext } from "../../context/GetItems";
 
 import axios from 'axios';
 
 //images for user list
-import images from "./listImages";
+import { findItemImage } from "./listImages";
 const API = import.meta.env.VITE_API_URL;
 
 
 export default function UserList() {
-    //itemList that will store user's grocery list 
+    //itemList that will store user's grocery list
     const { itemList, setItemList } = useItemListContext();
     const [inputValue, setInputValue] = useState("");
+    const itemInput = useRef(null);
     const [errorMessage, setErrorMessage] = useState("");
     const [areaMessage, setAreaMessage] = useState("Add items to your list to start searching for the best deals near you!");
     const [cheapestOptions, setCheapestOptions] = useState({});
+    const [searchedZip, setSearchedZip] = useState("");
     const [stores, setStores] = useState([]);
-    const [matchedImages, setMatchedImages] = useState([]);
 
     //Products Data Retrieved Here
     const [products, setProducts] = useState([]);
@@ -40,80 +34,59 @@ export default function UserList() {
     }, []);
 
     //Retailers/Stores data retrieved here
-        useEffect(() => {
-            axios.get(`${API}/retailer`)
-            .then((response) => {
-                setStores(response.data);
-            })
-            .catch((e) => console.error("error fetching data", e));
-        }, []);
-    
+    useEffect(() => {
+        axios.get(`${API}/retailer`)
+        .then((response) => {
+            setStores(response.data);
+        })
+        .catch((e) => console.error("error fetching data", e));
+    }, []);
 
-
-    //this is a hover state for list icons such as the shopping cart and minus button  for a user-friendly interface 
-    const [isHovered, setIsHovered] = useState(false);
-    const [isMinusHovered, setIsMinusHovered] = useState(Array(itemList.length).fill(false));
+    //every zip code a store covers, for the hint under the zip field
+    const zipcodes = [...new Set(stores.flatMap(store => store.zipcodes_array))].sort((a, b) => a - b);
 
     //this fxns is responsible for creating the user's grocery list (itemList). Users input grocery items into the input form and on submit an item is added to the itemlist array
-    // Get user data
-    const { loggedIn } = AuthData();
-    const { user } = AuthData();
-
-    //add pictures to user's itemList
-    const defaultProductImage = "https://png.pngtree.com/thumb_back/fh260/background/20230721/pngtree-assorted-grocery-items-arranged-in-a-white-3d-rendering-of-a-image_3722980.jpg";
-
-    //useEffect is used to updated matchedImages when itemList changes
-    useEffect(() => {
-        const updatedMatchedImages = itemList.map((itemName) => {
-            const matchingImage = images.find((image) => itemName.includes(image.name));
-            return matchingImage || { name: itemName, image: defaultProductImage };
-        });
-
-        setMatchedImages(updatedMatchedImages);
-    }, [itemList]);
-
-    const addItem = () => {
-        if (inputValue.trim() !== '') {
+    const addItem = (e) => {
+        e.preventDefault();
+        const newItem = inputValue.trim().toLowerCase();
+        if (newItem !== '') {
             //check for duplicate list items
-            if (itemList.includes(inputValue)) {
+            if (itemList.includes(newItem)) {
                 setErrorMessage("Item already added to the list");
             } else {
                 //Clear the input for the next entry
-                setItemList((prevItemList) => [...prevItemList, inputValue.toLowerCase()]);
-                console.log(itemList);
+                setItemList((prevItemList) => [...prevItemList, newItem]);
                 setInputValue('');
                 setErrorMessage('');
-                
             }
-        };
+        }
     };
-
 
     //this fxn removes an item from the list if the user no longer wants that on their grocery list
     const removeListItem = (removedItem) => {
-        const updatedList = itemList.filter((item)=> item.toLowerCase() !== removedItem.toLowerCase());
-        setItemList(updatedList);
-
-        setMatchedImages((prevMatchedImages) =>
-        prevMatchedImages.filter((image) => image.name.toLowerCase() !== removedItem.toLowerCase())
-        );
+        setItemList(itemList.filter((item) => item !== removedItem));
+        setErrorMessage("");
+        //the remove button is gone, so keep keyboard focus on the list
+        itemInput.current.focus();
     }
 
-    //this fxn takes in the itemList (user's grocery list) and the entered zipcode from the SearchBar component to find validStores. validStores are stores within that zipcode. Stores in the area are then evaluated to check for the cheapest store items that match the items on the user's itemList 
+    //this fxn takes in the itemList (user's grocery list) and the entered zipcode from the SearchBar component to find validStores. validStores are stores within that zipcode. Stores in the area are then evaluated to check for the cheapest store items that match the items on the user's itemList
     const findCheapestOptions = (itemList, zipcode) => {
-        const updatedCheapestOptions = { ...cheapestOptions };
+        const updatedCheapestOptions = {};
 
         //this function filters stores in a specific area when a user enters their zip
-        zipcode = Number(zipcode)
-        const validStores = stores.filter(store => store.zipcodes_array.includes(zipcode)).map(store => ({...store,zipcodes_array: [...store.zipcodes_array],
-        }));
+        const validStores = stores.filter(store => store.zipcodes_array.includes(Number(zipcode)));
 
-        console.log(validStores);
-        
         if (validStores.length === 0) {
             setCheapestOptions({});
             setAreaMessage("Sorry, at the moment we do not have store details for that zip code yet. We are working on expanding our location coverage. Please check back soon.")
             return; //no valid stores found
+        }
+
+        if (itemList.length === 0) {
+            setCheapestOptions({});
+            setAreaMessage("Add items to your list to start searching for the best deals near you!");
+            return;
         }
 
         //now that we have the stores in a specific location we will iterate over them; checking for the cheapest item(s) that closely match user's list
@@ -133,24 +106,27 @@ export default function UserList() {
 
                     //push the cheapest product into the cheapestOptions[store] array
                     updatedCheapestOptions[store.retailer_id].push({
+                        name: item,
                         store: store.retailer_name,
                         item: cheapestProduct.product_name,
+                        size: cheapestProduct.size,
                         price: cheapestProduct.price,
-                        image: cheapestProduct.thumbnail,
+                        image: findItemImage(item),
                         link: store.website,
                     });
                 } else {
-                    updatedCheapestOptions[store.retailer_id].push({ 
+                    updatedCheapestOptions[store.retailer_id].push({
+                        name: item,
                         store: store.retailer_name,
-                        item: `sorry, our list for ${store} doesn't have ${item}.`,
-                        image: itemUnavailable,
-                        className: 'unavailable-item',
+                        image: findItemImage(item),
+                        link: store.website,
+                        unavailable: true,
                         price: 0,
                     });
                 }
-                console.log(updatedCheapestOptions)
             });
         });
+        setSearchedZip(zipcode);
         setCheapestOptions(updatedCheapestOptions);
     };
 
@@ -160,10 +136,8 @@ export default function UserList() {
         const totalPrices = {};
 
         Object.keys(cheapestOptions).forEach(store => {
-            const storeItems = cheapestOptions[store];
-
-            const storeTotalPrice = storeItems.reduce((sum, item) => {
-                if(item.className ==='unavailable-item'){
+            const storeTotalPrice = cheapestOptions[store].reduce((sum, item) => {
+                if (item.unavailable) {
                     return sum;
                 }
 
@@ -175,10 +149,9 @@ export default function UserList() {
         return totalPrices;
     }
 
-    //Prices is a global variable. I created it inside the main scope. I wanted to use the return values from the calculateTotalPrice fxn, thus, I stored it in the prices variable so that I can access it globally - quick tip - another way to do this is to make a use state that will update the totalPrices object. 
     const prices = calculateTotalPrice(cheapestOptions);
 
-    //bestDeal takes in the prices variable which is an object with store names and their total for all items, compares them, and returns the store with the least lowest total cost. Ex: {store: Walmart, total: $18}.  
+    //bestDeal takes in the prices variable which is an object with store names and their total for all items, compares them, and returns the store with the least lowest total cost. Ex: {store: Walmart, total: $18}.
     const bestDeal = (prices) => {
         if (Object.keys(prices).length === 0) {
             return null;
@@ -191,7 +164,7 @@ export default function UserList() {
             const totalPrice = parseFloat(prices[store]);
 
             if (totalPrice < lowestTotal) {
-                lowestTotal = totalPrice; 
+                lowestTotal = totalPrice;
                 cheapestStore = store;
             }
         });
@@ -202,102 +175,45 @@ export default function UserList() {
         };
     }
 
- //useEffect is used to update the states and information inside the objects cheapestOptions and prices.
-    useEffect(() => {
-        calculateTotalPrice(cheapestOptions);
-        bestDeal(prices);
-    }, [cheapestOptions, prices]);
-
-    const capitalizeFirstLetter = (str) => {
-        if(str){
-            return str.charAt(0).toUpperCase() + str.slice(1);
-        }
-      }
     return (
-        <div className="search-page-container">
-            <div className="user-list-container">
-                <div className="username">
-                    {loggedIn
-                    ? 
-                    <h3>
-                        <Link className="UserMenuLink"to="/profile"> {capitalizeFirstLetter(user.username)}'s List </Link> 
-                    </h3>
-
-                    : 
-                    <h3>Your List</h3>}
-                </div>
-                <div className="item-search">
+        <div className="search-page">
+            <section className="search-list" aria-labelledby="list-title">
+                <h1 id="list-title">Your list</h1>
+                <form className="search-add" onSubmit={addItem}>
+                    <label htmlFor="item-search" className="visually-hidden">Add your items</label>
                     <input
                         id="item-search"
+                        ref={itemInput}
+                        className="field-input"
                         type="text"
                         placeholder="Add your items"
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
-                        required
-                        // style={{ textAlign: "center" }}
                     />
-                    <button style={{ all: 'unset' }} className="list-icon" onClick={addItem} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-                        <img
-                            src={isHovered ? cartIconHover : cartIcon }
-                            alt="cart icon"
-                        />
-                    </button>
-                </div>
-                <div className="error-message">
-                    {errorMessage && (
-                        <div>
-                            <p>{errorMessage}</p>
-                        </div>
-                    )}
-                </div>
-                <div className="user-box">
-                    <div className="user-list">
-                        <ul>
-                            {matchedImages.map((item, i) => (
-                                <div key={i} className="item">
-                                    <img
-                                        src={item.image}
-                                        alt={item.name}
-                                        style={{ width: "50px", height: "50px" }}
-                                    />
-                                    <li>{item.name}</li>
-                                    <button 
-                                        className="list-icon" 
-                                        key ={i}
-                                        style={{all: "unset"}} 
-                                        onMouseEnter={() => {
-                                            const newHoverStates = [...isMinusHovered];
-                                            newHoverStates[i] = true;
-                                            setIsMinusHovered(newHoverStates);
-                                        }}
-                                        onMouseLeave={() => {
-                                            const newHoverStates = [...isMinusHovered];
-                                            newHoverStates[i] = false;
-                                            setIsMinusHovered(newHoverStates);
-                                        }}
-                                        onClick={() => removeListItem(item.name)}>
-                                        <img 
-                                            src={isMinusHovered[i] ? circleIconHover : circleIcon}
-                                            alt="minus icon"
-                                        />
-                                    </button>
-                                </div>
-                            ))}
-                        </ul>
-                    </div>
-                    <div className="zip-search">
-                        <span>zip code</span>
-                        <SearchBar userList={itemList} onSearch={findCheapestOptions} />
-                    </div>
-                </div>
-            </div>
-            <div className="deals-container">
-                <h3>Your Options</h3>
-                <SearchResults cheapestOptions={cheapestOptions} areaMessage={areaMessage} totalPrices = {calculateTotalPrice(cheapestOptions)} 
-                bestDeal = {bestDeal(prices)}
-                /> 
-            </div>
+                    <button type="submit" className="button-outline">Add</button>
+                </form>
+                {errorMessage && <p className="search-error" role="alert">{errorMessage}</p>}
+                {itemList.length > 0 && (
+                    <ul className="search-items" aria-label="Items on your list">
+                        {itemList.map((item) => (
+                            <li key={item}>
+                                {item}
+                                <button type="button" aria-label={`Remove ${item}`} onClick={() => removeListItem(item)}>×</button>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+                <SearchBar userList={itemList} onSearch={findCheapestOptions} zipcodes={zipcodes} />
+            </section>
+            <section className="search-options" aria-labelledby="options-title">
+                <h2 id="options-title" className="visually-hidden">
+                    {searchedZip ? `Your options near ${searchedZip}` : "Your options"}
+                </h2>
+                <div className="rail" aria-hidden="true"></div>
+                <SearchResults cheapestOptions={cheapestOptions} areaMessage={areaMessage} totalPrices={prices}
+                bestDeal={bestDeal(prices)}
+                />
+            </section>
         </div>
-        
     )
 }

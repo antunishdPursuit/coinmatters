@@ -1,44 +1,44 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../../CSS/Search.css";
-
-
-
-
-// const API = import.meta.env.VITE_API_URL;
 
 /*
-this function is the SearchBar fxn that is responsible for taking the userList, which is the itemList passed down from the UserList component, and onSearch, which is the findCheapestOptions fxn, to store the zipcode and send the information back to the  findCheapestOptions fxn. 
+this function is the SearchBar fxn that is responsible for taking the userList, which is the itemList passed down from the UserList component, and onSearch, which is the findCheapestOptions fxn, to store the zipcode and send the information back to the  findCheapestOptions fxn.
 */
 
-export default function SearchBar({ userList, onSearch }) {
+// "10029, 10456 and 10462"
+const listZipcodes = (zipcodes) => zipcodes.length === 1
+    ? String(zipcodes[0])
+    : `${zipcodes.slice(0, -1).join(", ")} and ${zipcodes[zipcodes.length - 1]}`;
+
+export default function SearchBar({ userList, onSearch, zipcodes }) {
     const [zipcode, setZipcode] = useState("");
     const navigate = useNavigate()
 
     const handleSearch = (e) => {
         e.preventDefault();
-        setZipcode(e.target.value);
-        onSearch(userList, zipcode);
+        onSearch(userList, zipcode.trim());
     }
-   
+
     const newList = () => {
       navigate("/list/new")
     }
-    
+
     return (
-        <div className="search-bar-container">
-          <div className="search-bar">
-            <input className="search-bar-bar"
+        <form className="search-zip" onSubmit={handleSearch}>
+            <label htmlFor="zip">Zip code</label>
+            <input
+                id="zip"
+                className="field-input"
                 type="text"
+                inputMode="numeric"
                 placeholder="Enter your zip code"
+                aria-describedby={zipcodes.length > 0 ? "zip-hint" : undefined}
                 value={zipcode}
                 onChange={(e) => setZipcode(e.target.value)}
             />
-            <div className="buttons">
-                    <button className="btn-1" onClick={newList}>Save my list</button>
-                    <button className="btn-2" onClick={handleSearch}>Find my deals</button>
-            </div>
-          </div>
-        </div>
+            {zipcodes.length > 0 && <span id="zip-hint" className="search-hint">We cover {listZipcodes(zipcodes)}.</span>}
+            <button type="submit" className="button-primary">Find my deals</button>
+            <button type="button" className="button-outline" onClick={newList}>Save my list</button>
+        </form>
     );
 };

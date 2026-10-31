@@ -1,0 +1,265 @@
+.search-page {
+    display: grid;
+    grid-template-columns: 312px minmax(0, 1fr);
+    gap: var(--space-3);
+    padding: 0 var(--space-3) var(--space-4);
+}
+
+.search-list {
+    margin-top: var(--space-4);
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border: 1px solid var(--light-gray);
+    border-radius: var(--radius);
+}
+
+.search-list h1 {
+    margin: 0;
+    font-size: var(--text-xl);
+}
+
+.search-add {
+    display: flex;
+    gap: var(--space-1);
+}
+
+.search-add .field-input {
+    flex: 1;
+}
+
+.search-add .button-outline {
+    padding: 0 var(--space-2);
+}
+
+.search-error {
+    margin: 0;
+    color: var(--red);
+    font-size: var(--text-sm);
+    font-weight: 700;
+}
+
+.search-items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.search-items li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: var(--space-2);
+    border: 1px solid var(--light-gray);
+    border-radius: var(--radius);
+    font-size: var(--text-lg);
+    text-transform: capitalize;
+}
+
+.search-items button {
+    width: 48px;
+    height: 48px;
+    border: 0;
+    background: transparent;
+    color: var(--gray);
+    font: 700 var(--text-lg) var(--font);
+    cursor: pointer;
+}
+
+.search-items button:hover {
+    color: var(--red);
+}
+
+.search-zip {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--light-gray);
+}
+
+.search-zip label {
+    font-size: var(--text-lg);
+    font-weight: 700;
+}
+
+.search-zip .field-input {
+    font-size: var(--text-lg);
+}
+
+.search-hint {
+    margin-bottom: var(--space-1);
+    color: var(--gray);
+    font-size: var(--text-sm);
+}
+
+.search-zip button {
+    font-size: var(--text-lg);
+}
+
+.search-zip .button-primary {
+    margin-bottom: var(--space-1);
+}
+
+.search-options {
+    display: flex;
+    flex-direction: column;
+}
+
+.search-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-4) var(--space-3);
+    text-align: center;
+}
+
+.search-empty img {
+    width: 96px;
+    height: 96px;
+    object-fit: contain;
+}
+
+.search-empty p {
+    max-width: 480px;
+    margin: 0;
+    color: var(--gray);
+    font-size: var(--text-lg);
+    line-height: 1.5;
+}
+
+/* Three stores side by side when there is room, fewer on narrower screens. */
+.store-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--space-3);
+}
+
+.store-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.store-items {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: var(--space-3);
+    padding: 0 var(--space-2);
+    border: 1px solid var(--light-gray);
+    border-radius: var(--radius);
+}
+
+/* The cheapest store gets a heavier ink border. */
+.store-items.best-deal {
+    border: 2px solid var(--ink);
+}
+
+.store-item {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: var(--space-2);
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.store-item img {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    border-radius: var(--radius);
+}
+
+.store-item-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.store-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.store-item-top strong {
+    font-size: var(--text-lg);
+    text-transform: capitalize;
+}
+
+.store-item-detail {
+    color: var(--gray);
+    font-size: var(--text-sm);
+}
+
+.store-total {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-2) 0;
+}
+
+.best-deal-tag {
+    align-self: flex-start;
+    padding: var(--space-1);
+    border-radius: var(--radius);
+    background: var(--gold);
+    font-size: var(--text-sm);
+    font-weight: 700;
+}
+
+.store-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.store-total-row strong {
+    font-size: var(--text-lg);
+}
+
+.store-total-row span {
+    font-size: var(--text-xl);
+    font-weight: 700;
+}
+
+.store-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    font-weight: 700;
+}
+
+.search-note {
+    margin: var(--space-3) 0 0;
+    color: var(--gray);
+    font-size: var(--text-sm);
+}
+
+@media (max-width: 767px) {
+    .search-page {
+        grid-template-columns: minmax(0, 1fr);
+        padding: 0 var(--space-2) var(--space-4);
+    }
+
+    .search-list {
+        margin-top: var(--space-3);
+    }
+
+    /* The list panel sits above the results, so there is no page top to hang the signs from. */
+    .search-options .rail,
+    .search-options .sign-cords {
+        display: none;
+    }
+
+    .store-card {
+        margin-top: var(--space-3);
+    }
+}
