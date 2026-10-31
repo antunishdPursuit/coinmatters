@@ -3,7 +3,7 @@
 Compare what your grocery list costs at nearby stores. Build a list, enter
 your ZIP code, and see each store's total with the best deal marked. This is
 the React frontend; the data comes from the
-[CoinMatters API](https://github.com/antunishdPursuit/Coinmatters-backened).
+[CoinMatters API](https://github.com/antunishdPursuit/coinmatters-backend).
 
 ![The CoinMatters home page](docs/screenshots/home.jpg)
 

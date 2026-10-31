@@ -9,8 +9,8 @@ import navLogo from "../Images/navLogo.png";
                 CoinMatters
             </span>
             <nav className="footer-links" aria-label="Sources">
-                <a href="https://github.com/antunishdPursuit/coinmatterscapstone-frontend">Frontend source</a>
-                <a href="https://github.com/antunishdPursuit/Coinmatters-backened">Backend source</a>
+                <a href="https://github.com/antunishdPursuit/coinmatters">Frontend source</a>
+                <a href="https://github.com/antunishdPursuit/coinmatters-backend">Backend source</a>
             </nav>
         </footer>
     )
