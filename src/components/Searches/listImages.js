@@ -1,5 +1,6 @@
 // Photos for list items. A name earlier in the list wins, so the more
-// specific names (such as "mac & cheese") come before the plain ones.
+// specific names (such as "mac & cheese") come before the plain ones. The one
+// exception is "eggs" before "egg whites", so a partial "egg" finds eggs.
 import eggwhites from "../../Images/products/eggwhites.jpg";
 import maccheese from "../../Images/products/maccheese.jpg";
 import milk from "../../Images/products/milk.jpg";
@@ -21,12 +22,13 @@ import orangejuice from "../../Images/products/orangejuice.jpg";
 import peanutbutter from "../../Images/products/peanutbutter.jpg";
 import apples from "../../Images/products/apples.jpg";
 import cereal from "../../Images/products/cereal.jpg";
+import navLogo from "../../Images/navLogo.png";
 
 const images = [
+  { name: "eggs", image: eggs },
   { name: "egg whites", image: eggwhites },
   { name: "mac & cheese", image: maccheese },
   { name: "milk", image: milk },
-  { name: "eggs", image: eggs },
   { name: "cheese", image: cheese },
   { name: "chicken", image: chicken },
   { name: "coffee", image: coffee },
@@ -45,5 +47,17 @@ const images = [
   { name: "apples", image: apples },
   { name: "cereal", image: cereal },
 ];
+
+// Finds the photo for a list item. An exact name wins, so "cheese" isn't shown
+// as mac & cheese; then "whole milk" finds milk, and "straw" finds strawberries
+// (at least three letters, so "a" doesn't find mac & cheese).
+// Items we have no photo for get the CoinMatters logo.
+export function findItemImage(itemName) {
+  const name = itemName.toLowerCase();
+  const match = images.find((image) => image.name === name)
+    || images.find((image) => name.includes(image.name))
+    || (name.length >= 3 && images.find((image) => image.name.includes(name)));
+  return match ? match.image : navLogo;
+}
 
 export default images;

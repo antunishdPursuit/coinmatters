@@ -1,6 +1,6 @@
 import { useEffect,useState } from "react";
 import "./UserListItem.css"
-import images from "../Searches/listImages";
+import { findItemImage } from "../Searches/listImages";
 
 function UserListItem({ list  }) {
   const [matchedImages, setMatchedImages] = useState([]);
@@ -19,17 +19,11 @@ function UserListItem({ list  }) {
     return date.toLocaleDateString();
   }
 
-  //default picture for image display
-  const defaultProductImage = "https://png.pngtree.com/thumb_back/fh260/background/20230721/pngtree-assorted-grocery-items-arranged-in-a-white-3d-rendering-of-a-image_3722980.jpg";
-
   //useEffect is used to updated matchedImages when itemList changes
   useEffect(() => {
     const updatedLists = removeEmptyStrings(list.products);
     const updatedMatchedImages = updatedLists.map((itemName) => {
-        // An exact name wins, so "cheese" isn't shown as mac & cheese.
-        const matchingImage = images.find((image) => image.name === itemName)
-          || images.find((image) => image.name.includes(itemName));
-        return matchingImage || { name: itemName, image: defaultProductImage };
+        return { name: itemName, image: findItemImage(itemName) };
     });
 
     setMatchedImages(updatedMatchedImages);
