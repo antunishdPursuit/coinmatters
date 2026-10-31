@@ -87,6 +87,9 @@
 }
 
 .account-switch a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
     font-weight: 700;
 }
 

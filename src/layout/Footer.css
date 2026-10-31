@@ -29,6 +29,12 @@
   font-weight: 700;
 }
 
+.footer-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+}
+
 @media (max-width: 767px) {
   .site-footer {
     padding: var(--space-3) var(--space-2);
