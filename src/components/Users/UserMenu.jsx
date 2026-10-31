@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthData } from "../../context/GetUser"
 import UserListItem, { plural, savedItems } from "./UserListItem";
@@ -8,15 +9,24 @@ function UserMenu() {
   const { user, userList } = AuthData()
   const lists = userList.lists || [];
   const itemCount = lists.reduce((total, list) => total + savedItems(list).length, 0);
+  const [status, setStatus] = useState("");
+  const title = useRef(null);
+
+  //after a delete the card is gone, so focus moves to the page title and the change is announced
+  const listDeleted = (name) => {
+    setStatus(`${name} deleted.`);
+    title.current.focus();
+  };
 
   return (
     <div className="my-lists">
       <section className="my-lists-header" aria-labelledby="my-lists-title">
         <div>
-          <h1 id="my-lists-title">Hi, {user.username}</h1>
+          <h1 id="my-lists-title" ref={title} tabIndex={-1}>Hi, {user.username}</h1>
           <p>
             {user.email} · <strong>{plural(lists.length, "saved list")}</strong> · <strong>{plural(itemCount, "item")}</strong>
           </p>
+          <p className="visually-hidden" role="status">{status}</p>
         </div>
         <Link className="button-primary" to="/list/new">+ New list</Link>
       </section>
@@ -24,7 +34,7 @@ function UserMenu() {
       <section className="my-lists-shelf" aria-label="Your saved lists">
         <div className="rail" aria-hidden="true"></div>
         <div className="my-lists-grid">
-          {lists.map((list) => <UserListItem key={list.list_id} list={list} />)}
+          {lists.map((list) => <UserListItem key={list.list_id} list={list} onDeleted={listDeleted} />)}
           <div className="list-card">
             <div className="sign">
               <div className="sign-cords" aria-hidden="true"><span></span><span></span></div>

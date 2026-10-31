@@ -1,6 +1,11 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { AuthData } from "../../context/GetUser"
 import { useItemListContext } from "../../context/GetItems";
 import { findItemImage } from "../Searches/listImages";
+
+const API = import.meta.env.VITE_API_URL;
 
 export const plural = (count, word) => `${count} ${word}${count === 1 ? "" : "s"}`;
 
@@ -12,9 +17,11 @@ function formattedDate(str) {
 }
 
 //one saved list: its items, date and note, with a button to compare its prices
-function UserListItem({ list }) {
+function UserListItem({ list, onDeleted }) {
+  const { user, getUserList } = AuthData()
   const { setItemList } = useItemListContext();
   const navigate = useNavigate();
+  const [error, setError] = useState("");
   const items = savedItems(list);
   const titleId = `list-${list.list_id}`;
 
@@ -22,6 +29,18 @@ function UserListItem({ list }) {
   const comparePrices = () => {
     setItemList([...new Set(items.map((item) => item.trim().toLowerCase()))]);
     navigate("/search");
+  };
+
+  const deleteList = () => {
+    if (!window.confirm(`Delete the list "${list.list_name}"? This can't be undone.`)) {
+      return;
+    }
+    setError("");
+    axios
+      .delete(`${API}/lists/user/${user.user_id}/${list.list_id}`, { withCredentials: true })
+      .then(() => getUserList(user.user_id))
+      .then(() => onDeleted(list.list_name))
+      .catch(() => setError("We couldn't delete this list. Please try again."));
   };
 
   return (
@@ -42,6 +61,8 @@ function UserListItem({ list }) {
         <p className="list-meta">{plural(items.length, "item")} · Created {formattedDate(list.date_created)}</p>
         {list.note && <p className="list-note"><strong>Note:</strong> {list.note}</p>}
         <button type="button" className="button-primary" onClick={comparePrices} aria-label={`Compare prices for ${list.list_name}`}>Compare prices</button>
+        <button type="button" className="button-danger" onClick={deleteList} aria-label={`Delete ${list.list_name}`}>Delete</button>
+        {error && <p className="list-error" role="alert">{error}</p>}
       </div>
     </article>
   )

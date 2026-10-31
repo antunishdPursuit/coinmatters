@@ -75,7 +75,7 @@ export const AuthWrapper = () => {
 
   // get user list
   const getUserList = (userId) => {
-    instance
+    return instance
       .get(`${API}/lists/user/${userId}`)
       .then((res) => {
         setUserList(res.data)
@@ -90,7 +90,7 @@ export const AuthWrapper = () => {
   }
 
   return (
-    <AuthContext.Provider value={{user, logInUser, logout, getUserData, loggedIn, userList}}>
+    <AuthContext.Provider value={{user, logInUser, logout, getUserData, getUserList, loggedIn, userList}}>
         <App></App>
     </AuthContext.Provider>
   )
