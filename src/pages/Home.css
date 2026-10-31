@@ -1,78 +1,77 @@
-.hero-image {
-    top: 5;
-    right: 0;
-    bottom: 0;
-    left: 0;
+.hero {
+    min-height: 480px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    padding: var(--space-4);
     background-image: url("../Images/header-background.jpg");
-    background-size: 100% auto;
-    background-repeat: no-repeat;
-    background-attachment: scroll;
-    background-position: 100% center;
-    padding: 60px 0;
+    background-size: cover;
+    background-position: center;
+}
+
+.hero-card {
+    width: 560px;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    background: var(--white);
+    border-radius: var(--radius);
+}
+
+/* A savings tag, so it uses the savings color. */
+.hero-stores {
+    align-self: flex-start;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius);
+    background: var(--gold);
+    font-size: var(--text-sm);
+    font-weight: 700;
+}
+
+.hero-card h1 {
+    margin: 0;
+    font-size: var(--text-2xl);
+    line-height: 1.1;
+}
+
+.hero-card p {
+    margin: 0;
+    font-size: var(--text-lg);
+    line-height: 1.5;
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.landing-features {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-3);
+    padding: var(--space-4);
+}
+
+@media (max-width: 767px) {
+    .hero {
+        min-height: 0;
+        padding: var(--space-4) var(--space-2);
     }
 
-.landing-headline {
-    font-size: 48px;
-    color: white;
-    font-family: "Montserrat", sans-serif;
-    width: 600px;
-    margin: 0 auto;
-    padding-top: 20px;
-    padding-bottom: 20px;
-    text-align: center;
-    font-weight: bold;
-    text-shadow: -1px -1px 0 rgb(249, 66, 176), 1px -1px 0 rgb(249, 66, 176), -1px 1px 0 rgb(249, 66, 176), 1px 1px 0 rgb(249, 66, 176);
-}
-.landing-headline-box{
-    background-color: #ffffff;
-    border: 1px solid black;
-    opacity: 0.9;
-    margin-left: 250px ;
-    margin-right: 250px;
-}
+    .hero-card {
+        padding: var(--space-3);
+    }
 
-.info-box {
-    padding: 5%;
-    text-align: left;
-    overflow-wrap: break-word;
-    width: 600px;
-}
+    .hero-card h1 {
+        font-size: var(--text-xl);
+    }
 
-.landing-cta-button {
-    padding: 12px 50px;
-    margin: 0 10px;
-    background-color: rgb(249, 66, 176);
-    color: rgb(249, 66, 176);
-    border: none;
-    border-radius: 15px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: x-large;
-    text-decoration: none;
-    text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
-
+    .landing-features {
+        grid-template-columns: minmax(0, 1fr);
+        padding: var(--space-4) var(--space-2);
+    }
 }
-
-.landing-cta-button:hover {
-    background-color: #94295e;
-    color: rgb(249, 66, 176);
-    text-shadow: 0px 0px 0 rgb(249, 66, 176), 0px 0px 0 rgb(249, 66, 176), 0px 0px 0 rgb(249, 66, 176), 0px 0px 0 rgb(249, 66, 176);
-
-}
-.landing-cta:hover {
-    opacity: 1;
-}
-
-.landing-cta {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-    opacity: 0.9;
-}
-  
-  .landing-features {
-    display: flex;
-    gap: 40px;
-    justify-content: center;
-    margin: 60px 0;
-  }

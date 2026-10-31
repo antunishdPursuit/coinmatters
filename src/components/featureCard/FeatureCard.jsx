@@ -1,34 +1,17 @@
-import { useNavigate } from 'react-router-dom';
 import './FeatureCard.css';
 
 const FeatureCard = ({
     imgUrl,
-    title, 
-    text, 
-    buttonText
-}) => { 
-
-    const navigate = useNavigate()
-    function toGoToLogin() {
-        navigate("/register")
-    }
+    imgAlt = "",
+    title,
+    text
+}) => {
     return (
-        <div className="feature-card">
-            <div className="feature-card__img">
-                <img src={imgUrl} alt="a user who uses this app" />
-            </div>
-            <div className="feature-card__info">
-                <div className="feature-card__title">
-                    {title}
-                </div>
-                <p>
-                    {text}
-                </p>
-                <button onClick={toGoToLogin}>
-                    {buttonText}
-                </button>
-            </div>
-      </div>
+        <article className="feature-card">
+            <img src={imgUrl} alt={imgAlt} />
+            <h2>{title}</h2>
+            <p>{text}</p>
+        </article>
     )
 }
 

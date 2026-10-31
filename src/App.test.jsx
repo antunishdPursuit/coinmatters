@@ -15,15 +15,16 @@ afterEach(() => window.history.pushState({}, '', '/'));
 test('renders the home page and main navigation for a logged-out visitor', async () => {
   render(<App />);
 
-  expect(screen.getByText('Save Time. Save Money. Shop Smart.')).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: 'Start Saving' })).toHaveAttribute('href', '/search');
+  expect(screen.getByRole('heading', { name: 'Save time. Save money. Shop smart.' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Start saving' })).toHaveAttribute('href', '/search');
   expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/');
   expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');
   expect(screen.getByRole('link', { name: 'Search' })).toHaveAttribute('href', '/search');
   expect(screen.getByRole('link', { name: 'Log in' })).toHaveAttribute('href', '/login');
   expect(screen.queryByRole('link', { name: 'Log out' })).not.toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('aria-current', 'page');
-  expect(screen.getAllByAltText('a user who uses this app')).toHaveLength(3);
+  expect(screen.getByRole('link', { name: 'Create an account' })).toHaveAttribute('href', '/register');
+  expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(3);
 });
 
 test('shows a not found page for an unknown address', async () => {

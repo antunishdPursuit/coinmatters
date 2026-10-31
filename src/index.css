@@ -44,3 +44,41 @@ a {
 a:hover {
   color: var(--ink);
 }
+
+/* Buttons, as links or buttons. Pink is the main action; the outline is
+   for the rest. */
+.button-primary,
+.button-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 48px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius);
+  font: 700 var(--text-md) var(--font);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button-primary {
+  border: 0;
+  background: var(--pink);
+  color: var(--white);
+}
+
+.button-primary:hover {
+  background: var(--ink);
+  color: var(--white);
+}
+
+.button-outline {
+  border: 1px solid var(--gray);
+  background: var(--white);
+  color: var(--ink);
+}
+
+.button-outline:hover {
+  border-color: var(--pink);
+  color: var(--pink);
+}
