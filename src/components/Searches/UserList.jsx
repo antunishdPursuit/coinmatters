@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import SearchBar from "./SearchBar";
 import SearchResults from "./SearchResults";
 import "./Search.css";
-import { useItemListContext } from "../../context/GetItems";
+import { cleanItem, useItemListContext } from "../../context/GetItems";
 
 import axios from 'axios';
 
@@ -49,7 +49,7 @@ export default function UserList() {
     //this fxns is responsible for creating the user's grocery list (itemList). Users input grocery items into the input form and on submit an item is added to the itemlist array
     const addItem = (e) => {
         e.preventDefault();
-        const newItem = inputValue.trim().toLowerCase();
+        const newItem = cleanItem(inputValue);
         if (newItem !== '') {
             //check for duplicate list items
             if (itemList.includes(newItem)) {

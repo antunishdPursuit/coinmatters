@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AuthData } from "../../context/GetUser"
-import { useItemListContext } from "../../context/GetItems";
+import { cleanItem, useItemListContext } from "../../context/GetItems";
 import { findItemImage } from "../Searches/listImages";
 
 const API = import.meta.env.VITE_API_URL;
@@ -27,7 +27,7 @@ function UserListItem({ list, onDeleted }) {
 
   //the Search page starts with this list's items
   const comparePrices = () => {
-    setItemList([...new Set(items.map((item) => item.trim().toLowerCase()))]);
+    setItemList([...new Set(items.map(cleanItem))]);
     navigate("/search");
   };
 

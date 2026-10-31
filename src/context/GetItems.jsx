@@ -2,6 +2,9 @@ import { createContext, useContext, useState } from "react";
 
 const ItemListContext = createContext();
 
+//items in the shared list are kept trimmed and lowercase
+export const cleanItem = (name) => name.trim().toLowerCase();
+
 export const useItemListContext = () => {
     return useContext(ItemListContext);
 };

@@ -2,17 +2,16 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { AuthData } from "../../context/GetUser";
-import { useItemListContext } from "../../context/GetItems";
+import { cleanItem, useItemListContext } from "../../context/GetItems";
 import { findItemImage } from "../Searches/listImages";
 import { buildShelf } from "./shelf";
+import { savedItems } from "./UserListItem";
 import "./NewList.css";
 
 const API = import.meta.env.VITE_API_URL;
 
-//names are kept trimmed and lowercase, like the Search page's list
-const clean = (name) => name.trim().toLowerCase();
-
-const savedItems = (list) => [...new Set((list.products || []).filter((item) => item.trim()).map(clean))];
+//a saved list's items, cleaned like the Search page's list and without repeats
+const savedProducts = (list) => [...new Set(savedItems(list).map(cleanItem))];
 
 //"Dairy and eggs" -> "aisle-dairy-and-eggs"
 const aisleId = (name) => `aisle-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
@@ -28,7 +27,7 @@ export default function NewList() {
     const savedList = id && (userList.lists || []).find((list) => String(list.list_id) === id);
 
     const [name, setName] = useState(savedList ? savedList.list_name : "");
-    const [products, setProducts] = useState(() => savedList ? savedItems(savedList) : id || startEmpty ? [] : [...new Set(itemList.map(clean))]);
+    const [products, setProducts] = useState(() => savedList ? savedProducts(savedList) : id || startEmpty ? [] : [...new Set(itemList.map(cleanItem))]);
     const [note, setNote] = useState(savedList ? savedList.note || "" : "");
     const [ownItem, setOwnItem] = useState("");
     const [itemError, setItemError] = useState("");
@@ -52,7 +51,7 @@ export default function NewList() {
     useEffect(() => {
         if (savedList && !filled) {
             setName(savedList.list_name);
-            setProducts(savedItems(savedList));
+            setProducts(savedProducts(savedList));
             setNote(savedList.note || "");
             setFilled(true);
         }
@@ -68,7 +67,7 @@ export default function NewList() {
     };
 
     const addOwnItem = () => {
-        const item = clean(ownItem);
+        const item = cleanItem(ownItem);
         if (!item) {
             return;
         }
