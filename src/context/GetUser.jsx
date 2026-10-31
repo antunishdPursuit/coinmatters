@@ -42,7 +42,7 @@ export const AuthWrapper = () => {
         // If the server responds with a success status, the cookie exists
         console.log("Cookie Set")
         setLoggedIn(true)
-        // getUserData()
+        getUserData()
       })
       .catch((error) => {
         // If the server responds with an error status, the cookie does not exist
@@ -67,7 +67,7 @@ export const AuthWrapper = () => {
   // Disable exhaustive-deps linting for the following lines
 // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (user) {
+    if (user?.user_id) {
       getUserList(user.user_id)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
