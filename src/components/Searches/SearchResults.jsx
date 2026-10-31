@@ -41,6 +41,7 @@ export default function SearchResults({ cheapestOptions, areaMessage, totalPrice
                       {option.unavailable
                         ? <span className="store-item-detail">Not at {storeName}</span>
                         : <span className="store-item-detail">{option.size} · {option.item}</span>}
+                      {option.smaller && <span className="store-warning">Smaller size than other stores</span>}
                     </div>
                   </div>
                 ))}

@@ -8,6 +8,7 @@ import axios from 'axios';
 
 //images for user list
 import { findItemImage } from "./listImages";
+import { markSmallerSizes } from "./sizes";
 const API = import.meta.env.VITE_API_URL;
 
 
@@ -127,7 +128,7 @@ export default function UserList() {
             });
         });
         setSearchedZip(zipcode);
-        setCheapestOptions(updatedCheapestOptions);
+        setCheapestOptions(markSmallerSizes(updatedCheapestOptions));
     };
 
     //this fxn takes in the cheapestOptions which is an object of the matched items, store name, and price for each item. this fxn is responsible for calculating and returning the total price for all items within one store. For example, if you have 5 items from Target. the price of all those items are calculated and printed in a human readable form. This fxn returns the store name and the total price of all groceries from that store. Ex: {store: Walmart, total: $18}

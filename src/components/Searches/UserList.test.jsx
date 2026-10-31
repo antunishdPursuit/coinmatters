@@ -17,6 +17,8 @@ const products = [
   { product_name: 'Horizon Organic Whole Milk', size: '1/2 Gallon', price: 4.79, retailer_id: 1 },
   { product_name: 'Great Value 2% Milk', size: '64 Ounces', price: 3.98, retailer_id: 3 },
   { product_name: 'Bananas', size: '1 Pound', price: 0.5, retailer_id: 3 },
+  { product_name: 'Large Eggs', size: '1/2 Dozen', price: 2.5, retailer_id: 1 },
+  { product_name: 'Brown Eggs', size: '1 Dozen', price: 3.5, retailer_id: 3 },
 ];
 
 beforeEach(() => {
@@ -58,6 +60,7 @@ test('compares the cheapest match at each nearby store', async () => {
   expect(within(ctown).getByText('$3.69', { selector: '.price-tag' })).toBeInTheDocument();
   expect(within(ctown).getByText('Not at CTown')).toBeInTheDocument();
   expect(within(ctown).getByText("Doesn't include bananas")).toBeInTheDocument();
+  expect(within(ctown).queryByText('Smaller size than other stores')).not.toBeInTheDocument();
 
   const walmart = screen.getByRole('article', { name: 'Walmart' });
   expect(within(walmart).getByText('$4.48')).toBeInTheDocument();
@@ -96,6 +99,19 @@ test('marks one best deal and replaces the stores on a new search', async () => 
   enter('Zip code', '10029');
   expect(screen.getAllByRole('article')).toHaveLength(1);
   expect(screen.queryByRole('article', { name: 'Walmart' })).not.toBeInTheDocument();
+});
+
+test('warns when a store sells a smaller size', async () => {
+  renderSearch();
+  await screen.findByText('We cover 10029 and 10456.');
+  enter('Add your items', 'eggs');
+  enter('Zip code', '10456');
+
+  const ctown = screen.getByRole('article', { name: 'CTown' });
+  expect(within(ctown).getByText('Smaller size than other stores')).toBeInTheDocument();
+  const walmart = screen.getByRole('article', { name: 'Walmart' });
+  expect(within(walmart).queryByText('Smaller size than other stores')).not.toBeInTheDocument();
+  expect(screen.queryByText(/Doesn't include/)).not.toBeInTheDocument();
 });
 
 test('asks for items when the list is empty', async () => {
