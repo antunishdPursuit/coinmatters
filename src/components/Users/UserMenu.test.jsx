@@ -14,11 +14,12 @@ const savedLists = [
 
 // The user's lists come from a fixed mock, so a deleted card stays on screen;
 // the tests check that the lists are fetched again instead.
-const auth = vi.hoisted(() => ({ getUserList: null, lists: [] }));
+const auth = vi.hoisted(() => ({ getUserList: null, lists: [], listsError: false }));
 vi.mock('../../context/GetUser', () => ({
   AuthData: () => ({
     user: { user_id: 1, username: 'testuser', email: 'testuser@example.com' },
     getUserList: auth.getUserList,
+    listsError: auth.listsError,
     userList: { lists: auth.lists },
   }),
 }));
@@ -43,6 +44,7 @@ function renderProfile() {
 
 beforeEach(() => {
   auth.lists = savedLists;
+  auth.listsError = false;
   auth.getUserList = vi.fn().mockResolvedValue();
 });
 
@@ -70,6 +72,17 @@ test('shows each saved list with its items, date and note', () => {
 
   const newLinks = screen.getAllByRole('link').filter((link) => link.getAttribute('href') === '/list/new');
   expect(newLinks).toHaveLength(2);
+});
+
+test('says when the lists could not load, and tries again', () => {
+  auth.lists = undefined;
+  auth.listsError = true;
+  renderProfile();
+
+  expect(screen.getByRole('alert')).toHaveTextContent("We couldn't load your lists.");
+  expect(screen.queryByText(/saved list/)).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+  expect(auth.getUserList).toHaveBeenCalledWith(1);
 });
 
 test('compares prices for a saved list', () => {

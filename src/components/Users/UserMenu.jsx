@@ -6,7 +6,7 @@ import "./MyLists.css"
 
 //the profile page: the user's saved lists, each under its own sign
 function UserMenu() {
-  const { user, userList } = AuthData()
+  const { user, userList, listsError, getUserList } = AuthData()
   const lists = userList.lists || [];
   const itemCount = lists.reduce((total, list) => total + savedItems(list).length, 0);
   const [status, setStatus] = useState("");
@@ -24,12 +24,21 @@ function UserMenu() {
         <div>
           <h1 id="my-lists-title" ref={title} tabIndex={-1}>Hi, {user.username}</h1>
           <p>
-            {user.email} · <strong>{plural(lists.length, "saved list")}</strong> · <strong>{plural(itemCount, "item")}</strong>
+            {user.email}
+            {/* the counts wait for the lists, so a failed load doesn't read as none */}
+            {userList.lists && <> · <strong>{plural(lists.length, "saved list")}</strong> · <strong>{plural(itemCount, "item")}</strong></>}
           </p>
           <p className="visually-hidden" role="status">{status}</p>
         </div>
         <Link className="button-primary" to="/list/new" state={{ empty: true }}>+ New list</Link>
       </section>
+
+      {listsError && (
+        <div className="my-lists-error" role="alert">
+          <p>We couldn't load your lists.</p>
+          <button type="button" className="button-outline" onClick={() => getUserList(user.user_id)}>Try again</button>
+        </div>
+      )}
 
       <section className="my-lists-shelf" aria-label="Your saved lists">
         <div className="rail" aria-hidden="true"></div>
