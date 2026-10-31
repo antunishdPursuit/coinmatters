@@ -82,3 +82,73 @@ a:hover {
   border-color: var(--pink);
   color: var(--pink);
 }
+
+/* For labels and headings that screen readers need but the layout shows another way. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.field-input {
+  box-sizing: border-box;
+  min-width: 0;
+  height: 48px;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--gray);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--ink);
+  font: 400 var(--text-md) var(--font);
+}
+
+/* The ink rail along the top of a page, and the signs that hang from it on two cords. */
+.rail {
+  height: 8px;
+  background: var(--ink);
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+
+.sign {
+  display: flex;
+  flex-direction: column;
+}
+
+.sign-cords {
+  height: 48px;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 var(--space-3);
+}
+
+.sign-cords span {
+  width: 2px;
+  background: var(--ink);
+}
+
+.sign h2,
+.sign h3 {
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: var(--white);
+  font-size: var(--text-xl);
+  font-weight: 700;
+}
+
+/* Prices and savings use the savings color. */
+.price-tag {
+  align-self: flex-start;
+  padding: var(--space-1);
+  border-radius: var(--radius);
+  background: var(--gold);
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
