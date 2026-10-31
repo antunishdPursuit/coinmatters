@@ -57,10 +57,12 @@ test('compares the cheapest match at each nearby store', async () => {
   const ctown = screen.getByRole('article', { name: 'CTown' });
   expect(within(ctown).getByText('$3.69', { selector: '.price-tag' })).toBeInTheDocument();
   expect(within(ctown).getByText('Not at CTown')).toBeInTheDocument();
+  expect(within(ctown).getByText("Doesn't include bananas")).toBeInTheDocument();
 
   const walmart = screen.getByRole('article', { name: 'Walmart' });
   expect(within(walmart).getByText('$4.48')).toBeInTheDocument();
   expect(within(walmart).getByText('64 Ounces · Great Value 2% Milk')).toBeInTheDocument();
+  expect(within(walmart).queryByText(/Doesn't include/)).not.toBeInTheDocument();
 
   expect(screen.getByText('Sample prices for demonstration.')).toBeInTheDocument();
 

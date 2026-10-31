@@ -199,6 +199,13 @@
     font-size: var(--text-sm);
 }
 
+/* Warnings about an item or a total use the error color. */
+.store-warning {
+    color: var(--red);
+    font-size: var(--text-sm);
+    font-weight: 700;
+}
+
 .store-total {
     display: flex;
     flex-direction: column;

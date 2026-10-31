@@ -1,5 +1,8 @@
 import logo from "../../Images/navLogo.png"
 
+// "ice cream and bananas"
+const listItems = new Intl.ListFormat("en", { type: "conjunction" });
+
 //this fxn returns the results of the user's search
 export default function SearchResults({ cheapestOptions, areaMessage, totalPrices, bestDeal}) {
   const storeIds = Object.keys(cheapestOptions);
@@ -19,6 +22,7 @@ export default function SearchResults({ cheapestOptions, areaMessage, totalPrice
         {storeIds.map((store) => {
           const storeName = cheapestOptions[store][0].store;
           const isBestDeal = bestDeal && bestDeal.store === store;
+          const missing = cheapestOptions[store].filter((option) => option.unavailable).map((option) => option.name);
           return (
             <article key={store} className="store-card" aria-labelledby={`store-${store}`}>
               <div className="sign">
@@ -46,6 +50,7 @@ export default function SearchResults({ cheapestOptions, areaMessage, totalPrice
                     <strong>Total cost</strong>
                     <span>${totalPrices[store]}</span>
                   </div>
+                  {missing.length > 0 && <span className="store-warning">Doesn't include {listItems.format(missing)}</span>}
                 </div>
               </div>
               {/* rel="noopener noreferrer" keeps the store's page from reaching back into this one */}
