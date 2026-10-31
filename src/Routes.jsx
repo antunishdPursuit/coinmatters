@@ -21,8 +21,24 @@ import { ItemListProvider } from "./context/GetItems";
 
 
 function App() {
-  const { loggedIn } = AuthData();
-  
+  const { loggedIn, authChecked } = AuthData();
+
+  //both kinds of guarded page wait for the first login check, so a reload
+  //never sends someone the wrong way before the check answers
+  const loggedInOnly = (page) => {
+    if (!authChecked) {
+      return null;
+    }
+    return loggedIn ? page : <Navigate to="/login" replace />;
+  };
+
+  const loggedOutOnly = (page) => {
+    if (!authChecked) {
+      return null;
+    }
+    return loggedIn ? <Navigate to="/" replace /> : page;
+  };
+
   return (
     <div className="page">
       <ItemListProvider>
@@ -32,43 +48,12 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/search" element={<UserList />} />
-              <Route path="/register" 
-              element={loggedIn 
-              ?
-              <Navigate to="/"/>
-              :
-              <Register/>} />
-
-              <Route path="/login" 
-              element={loggedIn 
-              ?
-              <Navigate to="/"/> 
-              :
-              <LogIn />} />
-              
-              <Route path="/profile" 
-              element={loggedIn 
-              ?
-              <UserMenu />
-              :
-              <Navigate to="/"/> }/>
-
-              <Route path="/list/new" 
-              element={loggedIn
-              ?
-              <NewList />
-              :
-              <Navigate to="/login" /> } />
-
-              <Route path="/list/:id/edit"
-              element={loggedIn
-              ?
-              <NewList />
-              :
-              <Navigate to="/login" /> } />
-
+              <Route path="/register" element={loggedOutOnly(<Register />)} />
+              <Route path="/login" element={loggedOutOnly(<LogIn />)} />
+              <Route path="/profile" element={loggedInOnly(<UserMenu />)} />
+              <Route path="/list/new" element={loggedInOnly(<NewList />)} />
+              <Route path="/list/:id/edit" element={loggedInOnly(<NewList />)} />
               <Route path="*" element={<NotFound />} />
-
             </Routes>
           </main>
       </ItemListProvider>

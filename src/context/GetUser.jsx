@@ -9,6 +9,9 @@ const API = import.meta.env.VITE_API_URL;
 
 export const AuthWrapper = () => {
   const [ loggedIn, setLoggedIn] = useState(false)
+  // false until the first login check answers, so pages for logged-in users
+  // wait instead of sending a logged-in visitor away on a reload
+  const [ authChecked, setAuthChecked] = useState(false)
   const [ user, setUser ] = useState({})
   const [ userList, setUserList] = useState({})
   const location = useLocation();
@@ -35,19 +38,30 @@ export const AuthWrapper = () => {
     //Makes it so that every time the route changes, the function is triggered
   // Disable exhaustive-deps linting for the following lines
     useEffect(() => {
-    console.log("Checking loggined in")
+    // an answer that arrives after the next page's check has started is ignored,
+    // so it can't undo a log in that happened in between
+    let stale = false
     axios
       .get(`${import.meta.env.VITE_API_URL}/check-login`, { withCredentials: true })
       .then((response) => {
         // If the server responds with a success status, the cookie exists
-        console.log("Cookie Set")
-        setLoggedIn(true)
-        getUserData()
+        if (!stale) {
+          setLoggedIn(true)
+          getUserData()
+        }
       })
-      .catch((error) => {
+      .catch(() => {
         // If the server responds with an error status, the cookie does not exist
-        console.log("Cookie Not Set", error);
+        if (!stale) {
+          setLoggedIn(false)
+        }
+      })
+      .finally(() => {
+        if (!stale) {
+          setAuthChecked(true)
+        }
       });
+    return () => { stale = true }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location]);
 
@@ -90,7 +104,7 @@ export const AuthWrapper = () => {
   }
 
   return (
-    <AuthContext.Provider value={{user, logInUser, logout, getUserData, getUserList, loggedIn, userList}}>
+    <AuthContext.Provider value={{user, logInUser, logout, getUserData, getUserList, loggedIn, authChecked, userList}}>
         <App></App>
     </AuthContext.Provider>
   )
